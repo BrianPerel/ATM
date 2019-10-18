@@ -1,83 +1,103 @@
 /**
--OOP app using Java
--ATM functions: display balance, withdrawal, deposit
--ATM withdrawal should be prevented if balance is below withdrawal amount
--Keep track of 3 attributes: account number, PIN number, account balance
--save information to receipt file, at end if user doesn't want receipt program
-should delete file
+* @author Brian Perel
+*
+* -OOP app using Java
+* -exception, type, and condition handling
+* -ATM functions: display balance, withdrawal, deposit, terminate account
+* -ATM withdrawal should be prevented if balance is below withdrawal amount
+* -ATM deposit should be prevented if deposit amount is extreme
+* -Keep track of 3 attributes: account number, PIN number, account balance
+* -Save information to receipt txt file
 */
 
 import java.util.Scanner;
 import java.io.Console;
-import java.util.regex.Matcher;
+import java.util.InputMismatchException;
 import java.io.*;
-import java.nio.file.*;
+import java.io.IOException;
 import java.util.Date;
 
+class Account {
 
-class Client {
+	private int number; // this is a value that is automatically created for hashCode function
 	private String acctNo;
-	private String PIN;
+	private String pin;
 	private double balance;
 
-	public Client(String acctNo, String PIN, double balance) {
+	public Account() {
+		this(null, null, 0.00);
+	}
+	public Account(String acctNo, String pin) {
 		this.acctNo = acctNo;
-		this.PIN = PIN;
+		this.pin = pin;
+	}
+	public Account(String acctNo, String pin, double balance) {
+		this.acctNo = acctNo;
+		this.pin = pin;
 		this.balance = balance;
+	}
+	public void setNumber(int number) {
+		this.number = number;
 	}
 	public void setAcctNo(String acctNo) {
 		this.acctNo = acctNo;
 	}
-	public void setPIN(String PIN) {
-		this.PIN = PIN;
+	public void setPIN(String pin) {
+		this.pin = pin;
 	}
 	public void setBalance(double balance) {
 		this.balance = balance;
+	}
+	public int getNumber() {
+		return this.number;
 	}
 	public String getAcctNo() {
 		return this.acctNo;
 	}
 	public String getPIN() {
-		return this.PIN;
+		return this.pin;
 	}
 	public double getBalance() {
 		return this.balance;
 	}
 	public String toString() {
-		return "\tAccount number: " + getAcctNo() +
-		"\n\t" + "PIN number: " + getPIN() +
-		"\n\t" + String.format("Account balance: $%.2f\n", getBalance());
+		return String.format("\tAccount number: %s\n\tPIN number: %s" +
+		"\n\tAccount balance: $%,.2f\n", this.acctNo, this.pin, this.balance);
+	}
+	public boolean equals(Object o) {
+		if (o == null || !(o instanceof Account)) {
+			return false;
+		}
+		else return true;
+	}
+	public int hashCode() {
+		return number * 12;
 	}
 }
 
 
-class ATM {
-	private Client client; // we need this so that we can call methods of Client class
+abstract class ATM {
+	private Account account; // we need this so that we can call methods of account class
 
-	public ATM(Client c) {
-		this.client = c;
+	public ATM(Account account) {
+		this.account = account;
 	}
-
 	public void displayBalance() {
-		System.out.println("Balance: " + client.getBalance());
+		System.out.println("Balance: " + account.getBalance());
 	}
-
-	public void depositCash(double money, PrintWriter file) throws IOException {}
-
-	public void withdraw(double money, PrintWriter file) throws IOException {}
+	public abstract void depositCash(double money, PrintWriter file) throws IOException;
+	public abstract void withdraw(double money, PrintWriter file) throws IOException;
 }
 
 
 
 
 class DepositATM extends ATM {
-	private Client client;
-	private double balance;
+	private Account account;
 
-	public DepositATM(Client client) {
-		super(client);
-		this.client = client;
-		this.balance = balance;
+	public DepositATM(Account account) {
+		super(account);
+		this.account = account;
 	}
 
 	@Override
@@ -85,97 +105,128 @@ class DepositATM extends ATM {
 		Scanner input = new Scanner(System.in);
 
 		if(money >= 1 && money < 1000000000) {
-				client.setBalance(client.getBalance() + money);
+				account.setBalance(account.getBalance() + money);
 				System.out.println("\nDepositing...");
 				file.print("\nDepositing...");
-				System.out.printf("Deposit Complete! Your New Balance is: $%,.2f\n", client.getBalance());
-				file.printf("Deposit Complete! Your New Balance is: $%,.2f\n", client.getBalance());
+				System.out.printf("Deposit Complete! Your New Balance is: $%,.2f\n", account.getBalance());
+				file.printf("Deposit Complete! Your New Balance is: $%,.2f\n", account.getBalance());
 		}
 
 		else if(money <= 0 || money > 1000000000) {
-			System.out.print("\tPlease enter a different amount to deposit or enter 0 to cancel depositing: ");
-			double d = input.nextDouble();
 
-			if(d == 0) {
-				System.out.println("\nDeposit operation cancelled...");
+			double d;
+
+			try {
+				System.out.print("\tPlease enter a different amount to deposit or enter 0 to cancel depositing: ");
+				d = input.nextDouble();
+
+				if(d == 0) {
+					System.out.println("\nDeposit operation cancelled...");
+				} else {
+					depositCash(d, file);
+				}
 			}
-
-			else {
+			catch(InputMismatchException inputMismatchException) {
+				System.out.println("\tError! Enter a number choice\n");
+				input.nextLine();
+				d = 0;
 				depositCash(d, file);
 			}
 		}
 	}
+
+	@Override
+	public void withdraw(double money, PrintWriter file) throws IOException {}
 }
 
 
 
 class WithdrawalATM extends ATM {
 
-	private Client client;
-	private double balance;
+	private Account account;
 
-	public WithdrawalATM(Client client) {
-		super(client);
-		this.client = client;
-		this.balance = balance;
+	public WithdrawalATM(Account account) {
+		super(account);
+		this.account = account;
 	}
 
 	@Override
 	public void withdraw(double money, PrintWriter file) throws IOException {
 		Scanner input = new Scanner(System.in);
 
-		if(money > 0 && money < client.getBalance()) {
-			client.setBalance(client.getBalance() - money);
+		if(money > 0 && money < account.getBalance()) {
+			account.setBalance(account.getBalance() - money);
 			System.out.println("\nWithdrawing...");
 			file.print("\nWithdrawing...");
-			System.out.printf("Withdraw complete! Your New Balance is: $%,.2f\n", client.getBalance());
-			file.printf("Withdraw complete! Your New Balance is: $%,.2f\n", client.getBalance());
+			System.out.printf("Withdraw complete! Your New Balance is: $%,.2f\n", account.getBalance());
+			file.printf("Withdraw complete! Your New Balance is: $%,.2f\n", account.getBalance());
 		}
 
 		else if(money <= 0) {
-			System.out.print("\tPlease enter a different amount to withdraw or 0 to cancel withdraw: ");
-			double w = input.nextDouble();
+
+			double w;
+
+			try {
+
+				System.out.print("\tPlease enter a different amount to withdraw or 0 to cancel withdraw: ");
+				w = input.nextDouble();
+
+				if(w == 0) {
+					System.out.println("\nWithdraw operation cancelled...");
+				} else {
+					withdraw(w, file);
+				}
+			}
+			catch(InputMismatchException inputMismatchException) {
+				System.out.println("\tError! Enter a number choice\n");
+				input.nextLine();
+				w = 0;
+				withdraw(w, file);
+			}
 
 			if(w == 0) {
 				System.out.println("\tWithdraw operation cancelled...");
-			}
-
-			else {
+			} else {
 				withdraw(w, file);
 			}
 		}
 
-		else if(money > client.getBalance()) {
+		else if(money > account.getBalance()) {
 			System.out.println("\tError: You don't have sufficient funds!");
 			System.out.print("\tPlease enter a different amount to withdraw or 0 to cancel withdraw: ");
 			double w = input.nextDouble();
 
 			if(w == 0) {
 				System.out.println("\tWithdraw operation cancelled...");
-			}
-
-			else {
+			} else {
 				withdraw(w, file);
 			}
 		}
 	}
+	public void depositCash(double money, PrintWriter file) throws IOException {}
 }
 
 
+
+
 public class ATM_Machine {
+
+	static Scanner input = new Scanner(System.in);
+
 	public static void main(String[] args) throws IOException {
-		Scanner input = new Scanner(System.in);
-		PrintWriter file = new PrintWriter("C:\\Users\\brian\\Desktop\\Brian's Folder\\FSU Courses\\My Projects\\ATM\\Console Version\\Receipt.txt");
+
+		PrintWriter file = new PrintWriter("C:\\Users\\brian\\Desktop\\Brian's Folder\\FSU Courses\\My Projects\\ATM2\\Receipt.txt");
+
 		Date date = new Date();
 
 		file.println("Today is: " + date + "\n");
 
 		Console console = System.console();
 
-		String acctNo, PIN;
-		char[] PIN1;
-		int track = 0;
-		int attempt = 0;
+		char[] pin1;
+		String acctNo, pin;
+		int track = 0, attempt = 0;
+
 
 		do {
 			if(attempt == 3) {
@@ -186,17 +237,18 @@ public class ATM_Machine {
 			if(track > 0)
 				System.out.println("Invalid Account!");
 
-		System.out.print("Account number (or 'cancel' to quit): ");
-		acctNo = input.next();
-		track++;
-		attempt++;
+			System.out.print("Account number (or 'cancel' to quit): ");
 
-		if(acctNo.equals("cancel"))
-		System.exit(0);
+			acctNo = input.next();
+			track++;
+			attempt++;
 
+			if(acctNo.equals("Cancel") || acctNo.equals("cancel") || acctNo.equals("CANCEL")) {
+				System.out.println("Have a nice day! :)");
+				System.exit(0);
+			}
 
-		} while(acctNo.length() < 6 || acctNo.length() > 6 || (acctNo.matches("[0-9]+") == false)
-		|| (!(acctNo.equals("123456"))));
+		} while(acctNo.length() < 6 || acctNo.length() > 6 || (acctNo.matches("[0-9]+") == false));
 
 		track = 0;
 		attempt = 0;
@@ -211,63 +263,95 @@ public class ATM_Machine {
 				System.out.println("Invalid PIN!");
 
 			System.out.print("PIN: ");
-			PIN1 = console.readPassword();
-			PIN = new String(PIN1);
+			pin1 = console.readPassword("****");
+			pin = new String(pin1);
 
 			track++;
 			attempt++;
 
-		} while(PIN.length() < 4 || PIN.length() > 4 || (PIN.matches("[0-9]+") == false) || (!PIN.equals("1111")));
+		} while(pin.length() < 4 || pin.length() > 4 || (pin.matches("[0-9]+") == false));
 
 		System.out.println("Welcome, Brian...");
 
-		Client client = new Client(acctNo, PIN, 10.00);
+		Account account = new Account(acctNo, pin, (Math.random() * 100000));
 
-		int select;
+		int select = 0;
 
+		menu(account, file, select);
+
+	}
+	public static void menu(Account account, PrintWriter file, int select) throws IOException {
+		boolean rightType = false;
 		do {
-			System.out.print("\nEnter:\n\t1. (1) for balance inquiry\n\t2. (2) for cash withdrawal" +
-			"\n\t3. (3) for cash deposit\n\t4. (4) to quit\n\tWhat would you like to do: ");
 
-				select = input.nextInt();
+			try {
+					System.out.print("\nEnter:\n\t1. (1) for balance inquiry\n\t2. (2) for cash withdrawal" +
+					"\n\t3. (3) for cash deposit\n\t4. (4) to terminate account\n\t5. (5) to quit\n\tWhat would you like to do: ");
 
-				switch(select) {
+						select = input.nextInt();
 
-					case 1: {
-						System.out.println("\nBalance inquiry...\n" + client);
-						file.print("Balance inquiry...\n" + client);
-						break;
-					}
+						switch(select) {
 
-					case 2:  {
-						ATM w1 = new WithdrawalATM(client);
-						System.out.print("\n\tWithdraw amount: $");
-						double w = input.nextDouble();
-						file.print("\n\tWithdraw amount: $" + w);
-						w1.withdraw(w, file); break;
-					}
+							case 1: {
+								if(account != null) {
+									System.out.println("\nBalance inquiry...\n" + account);
+									file.print("Balance inquiry...\n" + account);
+								}
+								else if(account == null) {
+									System.out.println("\nAccount is empty!");
+									file.print("Balance inquiry...\n\tAccount doesn't exist");
+								}
 
-					case 3: {
-						ATM d1 = new DepositATM(client);
-						System.out.print("\n\tDeposit amount: $");
-						double d = input.nextDouble();
-						file.print("\n\tDeposit amount: $" + d);
-						d1.depositCash(d, file); break;
-					}
+								rightType = true;
+								break;
+							}
 
-					case 4: {
-						System.out.println("\nHave a nice day!");
-						file.println("\nHave a nice day!"); break;
-					}
+							case 2: {
+								ATM w1 = new WithdrawalATM(account);
+								System.out.print("\n\tWithdraw amount: $");
+								double w = input.nextDouble();
+								file.print("\n\tWithdraw amount: $" + w);
+								w1.withdraw(w, file);
+								rightType = true;
+								break;
+							}
 
-					default:
-						System.out.println("Invalid option!"); break;
+							case 3: {
+								ATM d1 = new DepositATM(account);
+								System.out.print("\n\tDeposit amount: $");
+								double d = input.nextDouble();
+								file.println("\n\tDeposit amount: $" + d);
+								rightType = true;
+								d1.depositCash(d, file);
+								break;
+							}
 
-				}
+							case 4: {
+								account = null;
+								System.out.println("\nAccount has been terminated\n");
+								file.println("\nAccount has been terminated");
+								rightType = true;
+								break;
+							}
+							case 5: {
+								System.out.println("\nHave a nice day!");
+								file.print("\n\nHave a nice day!");
+								rightType = true;
+								break;
+							}
 
-		} while(select != 4);
+							default:
+								System.out.println("Invalid option!");
+								rightType = true;
+								break;
+						}
 
-		file.close();
+			} catch(InputMismatchException inputMismatchException) {
+				System.out.println("\tError! Enter a number choice\n");
+				input.nextLine();
+			}
+		}while(!rightType || select != 5);
 
+	file.close();
 	}
 }

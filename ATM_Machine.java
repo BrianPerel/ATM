@@ -1,15 +1,17 @@
-package ATM2;
+package ATM;
 
 /**
 * @author Brian Perel
+* @version 1.0
 *
 * -OOP app using Java
-* -exception, type, and condition handling
-* -ATM functions: display balance, withdrawal, deposit, terminate account
+* -ATM functions: display balance, withdrawal, deposit, transfer funds, terminate account
 * -ATM withdrawal should be prevented if balance is below withdrawal amount
 * -ATM deposit should be prevented if deposit amount is extreme
 * -Keep track of 3 attributes: account number, PIN number, account balance
+* -Validate all user input: exception, type and condition handling
 * -Save information to receipt txt file
+* -All currency is in USD $
 */
 
 import java.util.Scanner;
@@ -25,17 +27,19 @@ class Account {
 	private String acctNo;
 	private String pin;
 	private double balance;
+	private String acctType;
 
 	public Account() {
-		this(null, null, 0.00);
+		this(null, null, 0.00, null);
 	}
 	public Account(String acctNo, String pin) {
 		this.acctNo = acctNo;
 		this.pin = pin;
 	}
-	public Account(String acctNo, String pin, double balance) throws IllegalArgumentException {
+	public Account(String acctNo, String pin, double balance, String acctType) throws IllegalArgumentException {
 		this.acctNo = acctNo;
 		this.pin = pin;
+		this.acctType = acctType;
 
 		if(balance < 0)
 			throw new IllegalArgumentException("Value less than 0!");
@@ -54,6 +58,9 @@ class Account {
 	public void setBalance(double balance) {
 		this.balance = balance;
 	}
+	public void setType(String acctType) {
+		this.acctType = acctType;
+	}
 	public int getNumber() {
 		return this.number;
 	}
@@ -66,9 +73,12 @@ class Account {
 	public double getBalance() {
 		return this.balance;
 	}
+	public String getType() {
+		return this.acctType;
+	}
 	public String toString() {
 		return String.format("\tAccount number: %s\n\tPIN number: %s" +
-		"\n\tAccount balance: $%,.2f\n", this.acctNo, this.pin, this.balance);
+		"\n\tAccount balance: $%,.2f\n\tAccount type: %s", this.acctNo, this.pin, this.balance, this.acctType);
 	}
 	public boolean equals(Object o) {
 		if (o == null || !(o instanceof Account)) {
@@ -82,6 +92,7 @@ class Account {
 }
 
 
+
 abstract class ATM {
 	private Account account; // we need this so that we can call methods of account class
 
@@ -93,15 +104,16 @@ abstract class ATM {
 	}
 	public abstract void depositCash(double money, PrintWriter file) throws IOException;
 	public abstract void withdraw(double money, PrintWriter file) throws IOException;
+	public abstract void transferFunds(double money, String acctNo2, PrintWriter file) throws IOException;
 }
 
 
 
 
-class DepositATM extends ATM {
+class DepositFunds extends ATM {
 	private Account account;
 
-	public DepositATM(Account account) {
+	public DepositFunds(Account account) {
 		super(account);
 		this.account = account;
 	}
@@ -143,15 +155,16 @@ class DepositATM extends ATM {
 
 	@Override
 	public void withdraw(double money, PrintWriter file) throws IOException {}
+	public void transferFunds(double money, String acctNo2, PrintWriter file) throws IOException {}
 }
 
 
 
-class WithdrawalATM extends ATM {
+class WithdrawalFunds extends ATM {
 
 	private Account account;
 
-	public WithdrawalATM(Account account) {
+	public WithdrawalFunds(Account account) {
 		super(account);
 		this.account = account;
 	}
@@ -184,7 +197,7 @@ class WithdrawalATM extends ATM {
 				}
 			}
 			catch(InputMismatchException inputMismatchException) {
-				System.out.println("\tError! Enter a number choice\n");
+				System.out.println("\tError! Enter a number choice. Invalid option!\n");
 				input.nextLine();
 				w = 0;
 				withdraw(w, file);
@@ -210,11 +223,87 @@ class WithdrawalATM extends ATM {
 		}
 	}
 	public void depositCash(double money, PrintWriter file) throws IOException {}
+	public void transferFunds(double money, String acctNo2, PrintWriter file) throws IOException {}
 }
 
 
 
+
+
+class TransferFunds extends ATM {
+
+	private Account account;
+
+	public TransferFunds(Account account) {
+		super(account);
+		this.account = account;
+	}
+	@Override
+	public void transferFunds(double money, String acctNo2, PrintWriter file) throws IOException {
+		Scanner input = new Scanner(System.in);
+
+			if(money > 0 && money < account.getBalance()) {
+				account.setBalance(account.getBalance() - money);
+				System.out.println("\nTransferring...");
+				file.print("\nTransferring...");
+				System.out.printf("Transfer complete! Your New Balance is: $%,.2f\n", account.getBalance());
+				file.printf("Transfer complete! Your New Balance is: $%,.2f\n", account.getBalance());
+			}
+
+			else if(money <= 0) {
+
+				double t;
+
+				try {
+
+					System.out.print("\tPlease enter a different amount to transfer or 0 to cancel transfer operation: $");
+					t = input.nextDouble();
+
+					if(t == 0) {
+						System.out.println("\nTransfer operation cancelled...");
+					} else {
+						transferFunds(t, acctNo2, file);
+					}
+				}
+				catch(InputMismatchException inputMismatchException) {
+					System.out.println("\tError! Enter a number choice. Invalid option!\n");
+					input.nextLine();
+					t = 0;
+					transferFunds(t, acctNo2, file);
+				}
+
+				if(t == 0) {
+					System.out.println("\nTransfer operation cancelled...");
+				} else {
+					transferFunds(t, acctNo2, file);
+				}
+			}
+
+			else if(money > account.getBalance()) {
+				System.out.println("\tError: You don't have sufficient funds!");
+				System.out.print("\tPlease enter a different amount to transfer or 0 to cancel transfer operation: $");
+				double t = input.nextDouble();
+
+				if(t == 0) {
+					System.out.println("\nTransfer operation cancelled...");
+				} else {
+					transferFunds(t, acctNo2, file);
+				}
+		}
+	}
+
+	public void depositCash(double money, PrintWriter file) throws IOException {}
+	public void withdraw(double money, PrintWriter file) throws IOException {}
+}
+
+
+
+
+
+
 public class ATM_Machine {
+
+	static String acctNo;
 
 	static Scanner input = new Scanner(System.in);
 
@@ -231,7 +320,7 @@ public class ATM_Machine {
 		Console console = System.console();
 
 		char[] pin1;
-		String acctNo, pin;
+		String pin;
 		int attempt = 0;
 
 		do {
@@ -246,7 +335,7 @@ public class ATM_Machine {
 			attempt++;
 
 			if(acctNo.equals("Cancel") || acctNo.equals("cancel") || acctNo.equals("CANCEL")) {
-				System.out.println("Have a nice day! :)");
+				System.out.println("Have a nice day!");
 				System.exit(0);
 			}
 
@@ -265,6 +354,7 @@ public class ATM_Machine {
 
 			System.out.print("PIN: ");
 			pin1 = console.readPassword("****");
+
 			pin = new String(pin1);
 
 			if(pin.length() < 4 || pin.length() > 4 || (pin.matches("[0-9]+") == false))
@@ -277,29 +367,39 @@ public class ATM_Machine {
 		System.out.println("Welcome, Brian...\n\n");
 
 		System.out.println("Enter:");
+		String savCheck0;
 		String savCheck;
 
 		do {
-			System.out.print("\tSavings (s) or Checking (c): ");
-			savCheck = input.next();
+			System.out.print("\tSavings (s) or Checkings (c): ");
+			savCheck0 = input.next();
+			savCheck = Character.toUpperCase(savCheck0.charAt(0)) + savCheck0.substring(1);
 
 			if(savCheck.length() != 1 || (savCheck.matches("[A-Za-z]") == false))
 				System.out.println("\tError! Enter 's' or 'c'");
+
 		} while(savCheck.length() != 1 || (savCheck.matches("[A-Za-z]") == false));
 
-		Account account = new Account(acctNo, pin, (Math.random() * 100000));
+
+		String savCheck2 = "";
+		if(savCheck.equals("C"))
+			savCheck2 = "Checkings";
+
+		else if(savCheck.equals("S"))
+			savCheck2 = "Savings";
+
+		Account account = new Account(acctNo, pin, (Math.random() * 100000), savCheck2);
 
 		int select = 0;
-		menu(account, file, select);
-
+		menu(account, file, select, savCheck);
 	}
-	public static void menu(Account account, PrintWriter file, int select) throws IOException {
+	public static void menu(Account account, PrintWriter file, int select, String savCheck) throws IOException {
 		boolean rightType = false;
 		do {
 
 			try {
 				System.out.print("\nEnter:\n\t1. (1) for balance inquiry\n\t2. (2) for cash withdrawal" +
-				"\n\t3. (3) for cash deposit\n\t4. (4) to terminate account\n\t5. (5) to quit\n\tSelect your transaction: ");
+				"\n\t3. (3) for cash deposit\n\t4. (4) to terminate account\n\t5. (5) to transfer funds\n\t6. (6) to quit\n\tSelect your transaction: ");
 
 					select = input.nextInt();
 					switch(select) {
@@ -312,13 +412,12 @@ public class ATM_Machine {
 								System.out.println("\nAccount is empty!");
 								file.print("Balance inquiry...\n\tAccount doesn't exist");
 							}
-
 							rightType = true;
 							break;
 						}
 
 						case 2: {
-							ATM w1 = new WithdrawalATM(account);
+							ATM w1 = new WithdrawalFunds(account);
 							System.out.print("\n\tWithdraw amount: $");
 							double w = input.nextDouble();
 							file.print("\n\tWithdraw amount: $" + w);
@@ -328,7 +427,7 @@ public class ATM_Machine {
 						}
 
 						case 3: {
-							ATM d1 = new DepositATM(account);
+							ATM d1 = new DepositFunds(account);
 							System.out.print("\n\tDeposit amount: $");
 							double d = input.nextDouble();
 							file.println("\n\tDeposit amount: $" + d);
@@ -344,24 +443,45 @@ public class ATM_Machine {
 							rightType = true;
 							break;
 						}
+
 						case 5: {
+							ATM t1 = new TransferFunds(account);
+							String acctNo2;
+							System.out.println("");
+
+							do {
+								System.out.print("Account Number: ");
+								acctNo2 = input.next();
+								if(acctNo.equals(acctNo2) || acctNo2.length() < 6 || acctNo2.length() > 6 || (acctNo2.matches("[0-9]+") == false))
+									System.out.println("Invalid Account!");
+							} while(acctNo.equals(acctNo2) || (acctNo2.length() < 6 || acctNo2.length() > 6 || (acctNo2.matches("[0-9]+") == false)));
+
+							System.out.print("Transfer amount: $");
+							double t = input.nextDouble();
+							rightType = true;
+							t1.transferFunds(t, acctNo2, file);
+							break;
+						}
+
+						case 6: {
 							System.out.println("\nHave a nice day!");
 							file.print("\n\nHave a nice day!");
 							rightType = true;
 							break;
 						}
 
-						default:
+						default: {
 							System.out.println("Invalid option!");
 							rightType = true;
 							break;
+						}
 					}
 
 			} catch(InputMismatchException inputMismatchException) {
-				System.out.println("\tError! Enter a number choice\n");
+				System.out.println("\tError! Enter a number choice. Invalid option!\n");
 				input.nextLine();
 			}
-		}while(!rightType || select != 5);
+		}while(!rightType || select != 6);
 
 	file.close();
 	}

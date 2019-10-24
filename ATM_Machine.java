@@ -81,7 +81,7 @@ class Account {
 		"\n\tAccount balance: $%,.2f\n\tAccount type: %s", this.acctNo, this.pin, this.balance, this.acctType);
 	}
 	public boolean equals(Object o) {
-		if (o == null || !(o instanceof Account)) {
+		if(o == null || !(o instanceof Account)) {
 			return false;
 		}
 		else return true;
@@ -246,7 +246,7 @@ class TransferFunds extends ATM {
 				account.setBalance(account.getBalance() - money);
 				System.out.println("\nTransferring...");
 				file.print("\nTransferring...");
-				System.out.printf("Transfer complete! Your New Balance is: $%,.2f\n", account.getBalance());
+				System.out.printf("\nTransfer complete! Your New Balance is: $%,.2f\n", account.getBalance());
 				file.printf("Transfer complete! Your New Balance is: $%,.2f\n", account.getBalance());
 			}
 
@@ -309,7 +309,7 @@ public class ATM_Machine {
 
 	public static void main(String[] args) throws IOException {
 
-		PrintWriter file = new PrintWriter("C:\\Users\\brian\\Desktop\\Brian's Folder\\FSU Courses\\My Projects\\ATM2\\Receipt.txt");
+		PrintWriter file = new PrintWriter("C:\\Users\\brian\\Desktop\\Brian's Folder\\FSU Courses\\My Projects\\ATM\\Receipt.txt");
 
 		Date date = new Date();
 

@@ -1,0 +1,13 @@
+		City Central Bank
+
+Today is: Fri Oct 25 19:45:15 EDT 2019
+
+
+	Deposit amount: $4.54545454545E11
+
+	Deposit amount: $3443.0
+
+Depositing...Deposit Complete! Your New Balance is: $32,558.00
+
+
+Have a nice day!

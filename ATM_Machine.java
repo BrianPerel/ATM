@@ -10,14 +10,14 @@ package ATM;
 * -ATM deposit should be prevented if deposit amount is extreme
 * -Keep track of 3 attributes: account number, PIN number, account balance
 * -Validate all user input: exception, type and condition handling
-* -Save information to receipt txt file
+* -Save information to receipt txt file, at end of program ask if client wants a receipt or not, if not receipt file is deleted
 * -All currency is in USD $
 */
 
 import java.util.Scanner;
 import java.io.Console;
 import java.util.InputMismatchException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.io.IOException;
 import java.util.Date;
 
@@ -309,7 +309,8 @@ public class ATM_Machine {
 
 	public static void main(String[] args) throws IOException {
 
-		PrintWriter file = new PrintWriter("C:\\Users\\brian\\Desktop\\Brian's Folder\\FSU Courses\\My Projects\\ATM\\Receipt.txt");
+		File fileMain = new File("C:\\Users\\brian\\Desktop\\Brian's Folder\\FSU Courses\\My Projects\\ATM\\Receipt.txt");
+		PrintWriter file = new PrintWriter(fileMain);
 
 		Date date = new Date();
 		System.out.print("\t\tCity Central Bank");
@@ -387,9 +388,9 @@ public class ATM_Machine {
 		Account account = new Account(acctNo, pin, (Math.random() * 100000), savCheck2);
 
 		int select = 0;
-		menu(account, file, select, savCheck);
+		menu(account, file, select, savCheck, fileMain);
 	}
-	public static void menu(Account account, PrintWriter file, int select, String savCheck) throws IOException {
+	public static void menu(Account account, PrintWriter file, int select, String savCheck, File fileMain) throws IOException {
 		boolean acctTerminated = false;
 		do {
 
@@ -459,8 +460,16 @@ public class ATM_Machine {
 						}
 
 						case 6: {
-							System.out.println("\nHave a nice day!");
 							file.print("\n\nHave a nice day!");
+							System.out.print("\nWould you like a receipt? ");
+							String in = input.next();
+							file.close();
+
+							if(in.equals("No")) {
+								fileMain.delete();
+							}
+
+							System.out.println("\nHave a nice day!");
 							break;
 						}
 
@@ -475,7 +484,5 @@ public class ATM_Machine {
 				input.nextLine();
 			}
 		}while(select != 6);
-
-	file.close();
 	}
 }

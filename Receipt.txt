@@ -1,13 +1,11 @@
 		City Central Bank
 
-Today is: Fri Oct 25 19:45:15 EDT 2019
+Today is: Sun Oct 27 18:02:10 EDT 2019
 
-
-	Deposit amount: $4.54545454545E11
-
-	Deposit amount: $3443.0
-
-Depositing...Deposit Complete! Your New Balance is: $32,558.00
-
+Balance inquiry...
+	Account number: 434343
+	PIN number: 4343
+	Account balance: $76,228.61
+	Account type: Savings
 
 Have a nice day!

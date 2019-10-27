@@ -135,7 +135,6 @@ class DepositFunds extends ATM {
 		}
 		else if(money <= 0 || money > 1000000000) {
 
-			double d;
 			try {
 				System.out.print("\tPlease enter a number to continue or 0 to cancel depositing: $");
 				money = input.nextDouble();
@@ -154,6 +153,7 @@ class DepositFunds extends ATM {
 			}
 		}
 	}
+
 	@Override
 	public void withdraw(PrintWriter file) throws IOException {}
 	public void transferFunds(String acctNo2, PrintWriter file) throws IOException {}
@@ -188,7 +188,6 @@ class WithdrawalFunds extends ATM {
 		else if(money <= 0) {
 
 			try {
-
 				System.out.print("\tPlease enter a different amount to withdraw or 0 to cancel withdraw: $");
 				money = input.nextDouble();
 
@@ -223,10 +222,11 @@ class WithdrawalFunds extends ATM {
 			}
 		}
 	}
+
+	@Override
 	public void depositCash(PrintWriter file) throws IOException {}
 	public void transferFunds(String acctNo2, PrintWriter file) throws IOException {}
 }
-
 
 
 
@@ -255,7 +255,6 @@ class TransferFunds extends ATM {
 			}
 			else if(money <= 0) {
 
-				double t;
 				try {
 
 					System.out.print("\tPlease enter a different amount to transfer or 0 to cancel transfer operation: $");
@@ -293,11 +292,11 @@ class TransferFunds extends ATM {
 				}
 		}
 	}
+
+	@Override
 	public void depositCash(PrintWriter file) throws IOException {}
 	public void withdraw(PrintWriter file) throws IOException {}
 }
-
-
 
 
 
@@ -365,8 +364,7 @@ public class ATM_Machine {
 		System.out.println("Welcome, Brian...\n\n");
 
 		System.out.println("Enter:");
-		String savCheck0;
-		String savCheck;
+		String savCheck0, savCheck;
 
 		do {
 			System.out.print("\tSavings (s) or Checkings (c): ");
@@ -463,10 +461,14 @@ public class ATM_Machine {
 							file.print("\n\nHave a nice day!");
 							System.out.print("\nWould you like a receipt? ");
 							String in = input.next();
+							in = Character.toUpperCase(in.charAt(0)) + in.substring(1);
 							file.close();
 
 							if(in.equals("No")) {
 								fileMain.delete();
+							}
+							else {
+								System.out.println("Receipt saved as txt file: " + fileMain.getName());
 							}
 
 							System.out.println("\nHave a nice day!");

@@ -17,7 +17,8 @@ package ATM;
 import java.util.Scanner;
 import java.io.Console;
 import java.util.InputMismatchException;
-import java.io.*;
+import java.io.File;
+import java.io.PrintWriter;
 import java.io.IOException;
 import java.util.Date;
 
@@ -55,8 +56,11 @@ class Account {
 	public void setPIN(String pin) {
 		this.pin = pin;
 	}
-	public void setBalance(double balance) {
+	public void setBalance(double balance) throws IllegalArgumentException{
 		this.balance = balance;
+
+		if(balance < 0)
+			throw new IllegalArgumentException("Value less than 0!");
 	}
 	public void setType(String acctType) {
 		this.acctType = acctType;
@@ -133,8 +137,7 @@ class DepositFunds extends ATM {
 			System.out.printf("Deposit Complete! Your New Balance is: $%,.2f\n", account.getBalance());
 			file.printf("Deposit Complete! Your New Balance is: $%,.2f\n", account.getBalance());
 		}
-		else if(money <= 0 || money > 1000000000) {
-
+		else {
 			try {
 				System.out.print("\tPlease enter a number to continue or 0 to cancel depositing: $");
 				money = input.nextDouble();
@@ -322,6 +325,9 @@ public class ATM_Machine {
 		String pin;
 		int attempt = 0;
 
+		System.out.print("Enter a number: ");
+		int a = input.nextInt();
+
 		do {
 			if(attempt == 3) {
 				System.out.println("Max tries exceeded, ATM System locked! Restart to unlock");
@@ -329,18 +335,19 @@ public class ATM_Machine {
 			}
 			System.out.print("Account number (or 'cancel' to quit): ");
 			acctNo = input.next();
+			acctNo = acctNo.toLowerCase();
 
 			attempt++;
 
-			if(acctNo.equals("Cancel") || acctNo.equals("cancel") || acctNo.equals("CANCEL")) {
-				System.out.println("Have a nice day!");
+			if(acctNo.equals("cancel")) {
+				System.out.println("Have a nice day!\n");
 				System.exit(0);
 			}
 
-			if(acctNo.length() < 6 || acctNo.length() > 6 || (acctNo.matches("[0-9]+") == false))
+			if(acctNo.length() != 6 || (acctNo.matches("[0-9]+") == false))
 				System.out.println("Invalid Account!");
 
-		} while(acctNo.length() < 6 || acctNo.length() > 6 || (acctNo.matches("[0-9]+") == false));
+		} while(acctNo.length() != 6 || (acctNo.matches("[0-9]+") == false));
 
 		attempt = 0;
 
@@ -354,12 +361,12 @@ public class ATM_Machine {
 
 			pin = new String(pin1);
 
-			if(pin.length() < 4 || pin.length() > 4 || (pin.matches("[0-9]+") == false))
+			if(pin.length() != 4 || (pin.matches("[0-9]+") == false))
 				System.out.println("Invalid PIN!");
 
 			attempt++;
 
-		}while(pin.length() < 4 || pin.length() > 4 || (pin.matches("[0-9]+") == false));
+		}while(pin.length() != 4 || (pin.matches("[0-9]+") == false));
 
 		System.out.println("Welcome, Brian...\n\n");
 
@@ -390,11 +397,13 @@ public class ATM_Machine {
 	}
 	public static void menu(Account account, PrintWriter file, int select, String savCheck, File fileMain) throws IOException {
 		boolean acctTerminated = false;
+
 		do {
 
 			try {
 				System.out.print("\nEnter:\n\t1. (1) for balance inquiry\n\t2. (2) for cash withdrawal" +
-				"\n\t3. (3) for cash deposit\n\t4. (4) to terminate account\n\t5. (5) to transfer funds\n\t6. (6) to quit\n\tSelect your transaction: ");
+				"\n\t3. (3) for cash deposit\n\t4. (4) to terminate account\n\t5." +
+				" (5) to transfer funds\n\t6. (6) to quit\n\tSelect your transaction: ");
 
 					select = input.nextInt();
 					switch(select) {

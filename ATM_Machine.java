@@ -314,7 +314,7 @@ public class ATM_Machine extends JFrame {
 
 	public static void main(String[] args) throws IOException {
 
-		File fileMain = new File("C:\\Users\\brian\\Desktop\\Brian's Folder\\FSU Courses\\My Projects\\ATM\\Receipt.txt");
+		File fileMain = new File("Receipt.txt");
 		PrintWriter file = new PrintWriter(fileMain);
 
 		Date date = new Date();

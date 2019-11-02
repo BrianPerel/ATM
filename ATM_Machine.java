@@ -139,7 +139,16 @@ class DepositFunds extends ATM {
 	public void depositCash(PrintWriter file) {
 		Scanner input = new Scanner(System.in);
 
-		String money0 = JOptionPane.showInputDialog("\n\nDeposit amount: $");
+		String money0;
+
+		do {
+			money0 = JOptionPane.showInputDialog("\n\nDeposit amount: $");
+
+			if(money0.matches("[0-9]+") == false)
+				JOptionPane.showMessageDialog(null, "Invalid amount!");
+
+		}while(money0.matches("[0-9]+") == false);
+
 		double money  = Double.parseDouble(money0);
 		file.println("\n\tDeposit amount: $" + money);
 
@@ -190,7 +199,16 @@ class WithdrawalFunds extends ATM {
 	public void withdraw(PrintWriter file) throws IOException {
 		Scanner input = new Scanner(System.in);
 
-		String money0 = JOptionPane.showInputDialog("\n\tWithdraw amount: $");
+		String money0;
+
+		do {
+			money0 = JOptionPane.showInputDialog("\n\tWithdraw amount: $");
+
+			if(money0.matches("[0-9]+") == false)
+				JOptionPane.showMessageDialog(null, "Invalid amount!");
+
+		}while(money0.matches("[0-9]+") == false);
+
 		double money  = Double.parseDouble(money0);
 		file.print("\n\tWithdraw amount: $" + money);
 
@@ -261,15 +279,25 @@ class TransferFunds extends ATM {
 	public void transferFunds(String acctNo2, PrintWriter file) throws IOException {
 		Scanner input = new Scanner(System.in);
 
-		String money0 = JOptionPane.showInputDialog("\n\tTransfer amount: $");
-		double money  = Double.parseDouble(money0);
+		String money0;
+
+		do {
+			money0 = JOptionPane.showInputDialog("\n\nTransfer amount: $");
+
+			if(money0.matches("[0-9]+") == false)
+				JOptionPane.showMessageDialog(null, "Invalid amount!");
+
+		}while(money0.matches("[0-9]+") == false);
+
+		double money = Double.parseDouble(money0);
+		file.print("\n\tTransfer amount: $" + money);
 
 			if(money > 0 && money < account.getBalance()) {
 				account.setBalance(account.getBalance() - money);
 				file.print("\nTransferring...");
-				JOptionPane.showMessageDialog(null, "\nTransfer complete!\nYour New Balance for Account " +
-				account.getAcctNo() + " is: " + df.format(account.getBalance()) + "\nYour New Balance for Account " +
-				account2.getAcctNo() + " is: " + df.format(account2.getBalance()));
+				JOptionPane.showMessageDialog(null, "\nTransfer complete!\nYour New Balance for Account 1 (" +
+				account.getAcctNo() + ") is: " + df.format(account.getBalance()) + "\nYour New Balance for Account 2 (" +
+				account2.getAcctNo() + ") is: " + df.format(account2.getBalance()));
 
 				file.printf("Transfer complete! Your New Balance for Account " +
 				account.getAcctNo() + " is: " + df.format(account.getBalance()) + "\nYour New Balance for Account " +

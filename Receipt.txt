@@ -1,7 +1,19 @@
 		City Central Bank
 
-Today is: Sat Nov 02 11:07:28 EDT 2019
+Today is: Sat Nov 02 11:08:00 EDT 2019
 
+Balance inquiry...
+	Account number: 345213
+	PIN number: 2342
+	Account balance: $72,904.81
+	Account type: Savings
+	Withdraw amount: $2342.0
+Withdrawing...Withdraw complete! Your New Balance is: $70,562.81
+
+	Transfer amount: $4353.0
+Transferring...Transfer complete! Your New Balance for Account 345213 is: $66,209.81
+Your New Balance for Account 657657 is: $91,171.82
+Account has been terminated
 
 
 Have a nice day!

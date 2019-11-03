@@ -1,0 +1,9 @@
+	City Central Bank
+
+Today is: Sun Nov 03 15:53:44 EST 2019
+
+	Withdraw amount: $234.0
+Withdrawing...Withdraw complete! Your New Balance is: $61,424.18
+
+
+Have a nice day!

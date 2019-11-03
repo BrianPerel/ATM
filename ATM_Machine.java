@@ -31,6 +31,8 @@ import java.util.Date;
 import javax.swing.*;
 import java.awt.*;
 import java.text.DecimalFormat;
+import java.time.format.DateTimeFormatter;
+import java.text.NumberFormat;
 
 
 
@@ -49,7 +51,8 @@ class Account {
 		this.acctNo = acctNo;
 		this.pin = pin;
 	}
-	public Account(String acctNo, String pin, double balance, String acctType) throws IllegalArgumentException {
+	public Account(String acctNo, String pin, double balance, String acctType)
+										throws IllegalArgumentException {
 		this.acctNo = acctNo;
 		this.pin = pin;
 		this.acctType = acctType;
@@ -94,7 +97,8 @@ class Account {
 	}
 	public String toString() {
 		return String.format("\tAccount number: %s\n\tPIN number: %s" +
-		"\n\tAccount balance: $%,.2f\n\tAccount type: %s", this.acctNo, this.pin, this.balance, this.acctType);
+		"\n\tAccount balance: $%,.2f\n\tAccount type: %s", this.acctNo,
+		this.pin, this.balance, this.acctType);
 	}
 	public boolean equals(Object o) {
 		if(o == null || !(o instanceof Account)) {
@@ -108,9 +112,10 @@ class Account {
 }
 
 
-
+// abstract class, since it will be overwritten
 abstract class ATM {
-	private Account account; // we need this so that we can call methods of account class
+	// we need this so that we can call methods of account class
+	private Account account;
 
 	public ATM(Account account) {
 		this.account = account;
@@ -127,6 +132,7 @@ abstract class ATM {
 
 
 class DepositFunds extends ATM {
+	// for decimal rounding to 2nd place
 	static DecimalFormat df = new DecimalFormat("$###,###.00");
 	private Account account;
 
@@ -137,15 +143,16 @@ class DepositFunds extends ATM {
 
 	@Override
 	public void depositCash(PrintWriter file) {
-		Scanner input = new Scanner(System.in);
 
 		String money0;
 
 		do {
-			money0 = JOptionPane.showInputDialog("\n\nDeposit amount: $");
+			money0 = JOptionPane.showInputDialog(null, "\n\nDeposit amount: $", "Deposit",
+															JOptionPane.QUESTION_MESSAGE);
 
 			if(money0.matches("[0-9]+") == false)
-				JOptionPane.showMessageDialog(null, "Invalid amount!");
+				JOptionPane.showMessageDialog(null, "Invalid amount!", "Warning",
+													JOptionPane.QUESTION_MESSAGE);
 
 		}while(money0.matches("[0-9]+") == false);
 
@@ -155,7 +162,8 @@ class DepositFunds extends ATM {
 		if(money >= 1 && money < 1000000000) {
 			account.setBalance(account.getBalance() + money);
 			file.print("\nDepositing...");
-			JOptionPane.showMessageDialog(null, "Deposit Complete! Your New Balance is: " + df.format(account.getBalance()));
+			JOptionPane.showMessageDialog(null, "Deposit Complete! Your New Balance is: "
+														+ df.format(account.getBalance()));
 			file.printf("Deposit Complete! Your New Balance is: $%,.2f\n", account.getBalance());
 		}
 		else {
@@ -197,15 +205,16 @@ class WithdrawalFunds extends ATM {
 
 	@Override
 	public void withdraw(PrintWriter file) throws IOException {
-		Scanner input = new Scanner(System.in);
 
 		String money0;
 
 		do {
-			money0 = JOptionPane.showInputDialog("\n\tWithdraw amount: $");
+			money0 = JOptionPane.showInputDialog(null, "\nWithdraw amount: $", "ATM",
+														JOptionPane.QUESTION_MESSAGE);
 
 			if(money0.matches("[0-9]+") == false)
-				JOptionPane.showMessageDialog(null, "Invalid amount!");
+				JOptionPane.showMessageDialog(null, "Invalid amount!", "Warning",
+													JOptionPane.QUESTION_MESSAGE);
 
 		}while(money0.matches("[0-9]+") == false);
 
@@ -215,37 +224,33 @@ class WithdrawalFunds extends ATM {
 		if(money > 0 && money < account.getBalance()) {
 			account.setBalance(account.getBalance() - money);
 			file.print("\nWithdrawing...");
-			JOptionPane.showMessageDialog(null, "Withdraw Complete! Your New Balance is: " + df.format(account.getBalance()));
+			JOptionPane.showMessageDialog(null, "Withdraw Complete! Your New Balance is: "
+				+ df.format(account.getBalance()), "Withdraw", JOptionPane.QUESTION_MESSAGE);
 			file.printf("Withdraw complete! Your New Balance is: $%,.2f\n", account.getBalance());
 		}
 		else if(money <= 0) {
 
 			try {
-				JOptionPane.showMessageDialog(null, "\tAmount entered is too little!");
+				JOptionPane.showMessageDialog(null, "\tAmount entered is too little!", "Warning",
+																	JOptionPane.QUESTION_MESSAGE);
 
 				if(money == 0) {
 					JOptionPane.showMessageDialog(null, "\nWithdraw operation cancelled...");
 					file.println("Withdraw operation cancelled...");
-
 				} else {
 					withdraw(file);
 				}
 			}
 			catch(InputMismatchException inputMismatchException) {
-				JOptionPane.showMessageDialog(null, "\tError! Enter a number choice. Invalid option!\n");
-				withdraw(file);
-			}
-
-			if(money == 0) {
-				JOptionPane.showMessageDialog(null, "\nWithdraw operation cancelled...");
-				file.println("Withdraw opertion cancelled...");
-			} else {
+				JOptionPane.showMessageDialog(null, "\tError! Enter a number choice. Invalid option!\n",
+											  "Warning", JOptionPane.QUESTION_MESSAGE);
 				withdraw(file);
 			}
 		}
 
 		else if(money > account.getBalance()) {
-			JOptionPane.showMessageDialog(null, "\tError: You don't have sufficient funds!");
+			JOptionPane.showMessageDialog(null, "\tError: You don't have sufficient funds!",
+												"Warning", JOptionPane.QUESTION_MESSAGE);
 
 			if(money == 0) {
 				JOptionPane.showMessageDialog(null, "\nWithdraw operation cancelled...");
@@ -277,15 +282,16 @@ class TransferFunds extends ATM {
 	}
 	@Override
 	public void transferFunds(String acctNo2, PrintWriter file) throws IOException {
-		Scanner input = new Scanner(System.in);
 
 		String money0;
 
 		do {
-			money0 = JOptionPane.showInputDialog("\n\nTransfer amount: $");
+			money0 = JOptionPane.showInputDialog(null, "\nTransfer amount: $",
+										 "ATM", JOptionPane.QUESTION_MESSAGE);
 
 			if(money0.matches("[0-9]+") == false)
-				JOptionPane.showMessageDialog(null, "Invalid amount!");
+				JOptionPane.showMessageDialog(null, "Invalid amount!",
+							 "Warning", JOptionPane.QUESTION_MESSAGE);
 
 		}while(money0.matches("[0-9]+") == false);
 
@@ -297,7 +303,7 @@ class TransferFunds extends ATM {
 				file.print("\nTransferring...");
 				JOptionPane.showMessageDialog(null, "\nTransfer complete!\nYour New Balance for Account 1 (" +
 				account.getAcctNo() + ") is: " + df.format(account.getBalance()) + "\nYour New Balance for Account 2 (" +
-				account2.getAcctNo() + ") is: " + df.format(account2.getBalance()));
+				account2.getAcctNo() + ") is: " + df.format(account2.getBalance()), "ATM", JOptionPane.QUESTION_MESSAGE);
 
 				file.printf("Transfer complete! Your New Balance for Account " +
 				account.getAcctNo() + " is: " + df.format(account.getBalance()) + "\nYour New Balance for Account " +
@@ -306,34 +312,34 @@ class TransferFunds extends ATM {
 			else if(money <= 0) {
 
 				try {
-					money0 = JOptionPane.showInputDialog(null, "Amount entered is too little!");
+					money0 = JOptionPane.showInputDialog(null, "Amount entered is too little!",
+														"Warning", JOptionPane.QUESTION_MESSAGE);
 					money  = Double.parseDouble(money0);
 
 					if(money == 0) {
-						JOptionPane.showMessageDialog(null, "\nTransfer operation cancelled...");
+						JOptionPane.showMessageDialog(null, "\nTransfer operation cancelled...",
+														"Cancelled", JOptionPane.QUESTION_MESSAGE);
 						file.println("Transfer operation cancelled");
 					} else {
 						transferFunds(acctNo2, file);
 					}
 				}
 				catch(InputMismatchException inputMismatchException) {
-					JOptionPane.showMessageDialog(null, "\tError! Enter a number choice. Invalid option!\n");
-					transferFunds(acctNo2, file);
-				}
+					JOptionPane.showMessageDialog(null, "\tError! Enter a number choice. Invalid option!\n",
+													"Warning", JOptionPane.QUESTION_MESSAGE);
 
-				if(money == 0) {
-					JOptionPane.showMessageDialog(null, "\nTransfer operation cancelled...");
-					file.println("Transfer operation cancelled...");
-				} else {
 					transferFunds(acctNo2, file);
 				}
 			}
 
 			else if(money > account.getBalance()) {
-				JOptionPane.showMessageDialog(null, "\tError: You don't have sufficient funds!");
+				JOptionPane.showMessageDialog(null, "\tError: You don't have sufficient funds!",
+													"Warning", JOptionPane.QUESTION_MESSAGE);
 
 				if(money == 0) {
-					JOptionPane.showMessageDialog(null, "\nTransfer operation cancelled...");
+					JOptionPane.showMessageDialog(null, "\nTransfer operation cancelled...",
+													"Cancelled", JOptionPane.QUESTION_MESSAGE);
+
 					file.println("Transfer operation cancelled...");
 				} else {
 					transferFunds(acctNo2, file);
@@ -369,16 +375,22 @@ public class ATM_Machine extends JFrame {
 
 		do {
 			if(attempt == 3) {
-				JOptionPane.showMessageDialog(null, "Max tries exceeded, ATM System locked! Restart to unlock");
+				JOptionPane.showMessageDialog(null, "Max tries exceeded, ATM System locked! Restart to unlock",
+											  "ATM", JOptionPane.QUESTION_MESSAGE);
 				System.exit(0);
 			}
-			acctNo = JOptionPane.showInputDialog("City Central Bank\nToday is: " + date + "\n\nAccount Number: ");
-			acctNo = acctNo.toLowerCase();
+
+			DateTimeFormatter tf = DateTimeFormatter.ofPattern("MMM dd, h:mm a");
+			java.time.LocalDateTime now = java.time.LocalDateTime.now();
+			acctNo = JOptionPane.showInputDialog(null, "City Central Bank\nToday is: "
+				 + now.format(tf) + "\n\nAccount Number: ", "ATM", JOptionPane.QUESTION_MESSAGE);
+			acctNo = acctNo.trim();
 
 			attempt++;
 
 			if(acctNo.equals("cancel")) {
-				JOptionPane.showMessageDialog(null, "Have a nice day!");
+				JOptionPane.showMessageDialog(null, "Have a nice day!", "Goodbye",
+													JOptionPane.QUESTION_MESSAGE);
 				System.exit(0);
 			}
 
@@ -391,11 +403,10 @@ public class ATM_Machine extends JFrame {
 
 		do {
 			if(attempt == 3) {
-				JOptionPane.showMessageDialog(null, "Max tries exceeded, ATM System locked! Restart to unlock");
+				JOptionPane.showMessageDialog(null, "Max tries exceeded, ATM System locked! Restart to unlock",
+											  "ATM", JOptionPane.QUESTION_MESSAGE);
 				System.exit(0);
 			}
-		//	JOptionPane.showInputDialog("City Central Bank\nToday is: " + date);
-
 
 
 			JPanel panel = new JPanel();
@@ -406,9 +417,9 @@ public class ATM_Machine extends JFrame {
 			String[] options = new String[]{"OK", "Cancel"};
 
 
-			int option = JOptionPane.showOptionDialog(null, panel, "Input",
-											 JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
-											 null, options, null);
+			int option = JOptionPane.showOptionDialog(null, panel, "ATM",
+									JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
+									null, options, null);
 
 			if(option == 0) { // pressing OK button
 
@@ -422,7 +433,8 @@ public class ATM_Machine extends JFrame {
 			attempt++;
 
 			if(pin.length() != 4 || (pin.matches("[0-9]+") == false))
-				JOptionPane.showMessageDialog(null, "Invalid Pin Number!");
+				JOptionPane.showMessageDialog(null, "Invalid Pin Number!", "Warning",
+														JOptionPane.QUESTION_MESSAGE);
 
 		}while(pin.length() != 4 || (pin.matches("[0-9]+") == false));
 
@@ -430,13 +442,15 @@ public class ATM_Machine extends JFrame {
 
 		do {
 			do {
-			savCheck0 = JOptionPane.showInputDialog("Savings (s) or Checkings (c): ");
+			savCheck0 = JOptionPane.showInputDialog(null, "Savings (s) or Checkings (c): ",
+														"ATM", JOptionPane.QUESTION_MESSAGE);
 			}while(savCheck0.equals(""));
 
+			savCheck0 = savCheck0.trim();
 			savCheck = Character.toUpperCase(savCheck0.charAt(0)) + savCheck0.substring(1);
 
 			if(savCheck.length() != 1 || (savCheck.matches("[A-Za-z]") == false) || !(savCheck.equals("S")) && !(savCheck.equals("C")))
-				JOptionPane.showMessageDialog(null, "Invalid option!");
+				JOptionPane.showMessageDialog(null, "Invalid option!", "Warning", JOptionPane.QUESTION_MESSAGE);
 
 		} while(savCheck.length() != 1 || (savCheck.matches("[A-Za-z]") == false) || !(savCheck.equals("S")) && !(savCheck.equals("C")));
 
@@ -447,7 +461,7 @@ public class ATM_Machine extends JFrame {
 		else if(savCheck.equals("S"))
 			savCheck2 = "Savings";
 
-		Account account = new Account(acctNo, pin, (Math.random() * 100000), savCheck2);
+		Account account = new Account(acctNo, pin, ((Math.random() % 23) * 100000), savCheck2);
 
 		String select = "0";
 		menu(account, file, select, savCheck, fileMain);
@@ -458,9 +472,9 @@ public class ATM_Machine extends JFrame {
 		do {
 
 			try {
-				select = JOptionPane.showInputDialog("Enter:\n\t1. (1) for balance inquiry\n\t2. (2) for cash withdrawal" +
+				select = JOptionPane.showInputDialog(null, "Enter:\n\t1. (1) for balance inquiry\n\t2. (2) for cash withdrawal" +
 				"\n\t3. (3) for cash deposit\n\t4. (4) to terminate account\n\t5." +
-				" (5) to transfer funds\n\t6. (6) to quit\n\n\tSelect your transaction: \n");
+				" (5) to transfer funds\n\t6. (6) to quit\n\n\tSelect your transaction: \n", "ATM", JOptionPane.QUESTION_MESSAGE);
 
 					switch(select) {
 						case "1": {
@@ -516,13 +530,12 @@ public class ATM_Machine extends JFrame {
 							String acctNo2;
 
 							do {
-								acctNo2 = JOptionPane.showInputDialog("\nAccount Number 2: ");
+								acctNo2 = JOptionPane.showInputDialog(null, "\nAccount Number 2: ", "ATM", JOptionPane.QUESTION_MESSAGE);
 								if(acctNo.equals(acctNo2) || acctNo2.length() < 6 || acctNo2.length() > 6 || (acctNo2.matches("[0-9]+") == false)) {
 									JOptionPane.showMessageDialog(null, "Invalid Account!", "Warning!", JOptionPane.INFORMATION_MESSAGE);
 								}
-
 							} while(acctNo.equals(acctNo2) || (acctNo2.length() < 6 || acctNo2.length() > 6 || (acctNo2.matches("[0-9]+") == false)));
-							Account account2 = new Account(acctNo2, pin, Math.random() * 100000, savCheck);
+							Account account2 = new Account(acctNo2, pin, (Math.random() % 21) * 100000, savCheck);
 							ATM t1 = new TransferFunds(account, account2);
 							t1.transferFunds(acctNo2, file);
 							break;
@@ -530,7 +543,7 @@ public class ATM_Machine extends JFrame {
 
 						case "6": {
 							file.print("\n\nHave a nice day!");
-							String in = JOptionPane.showInputDialog("\nWould you like a receipt? ");
+							String in = JOptionPane.showInputDialog(null, "\nWould you like a receipt? ", "Receipt?", JOptionPane.QUESTION_MESSAGE);
 							file.close();
 
 							if(in.equals("No") || in.equals("no")) {
@@ -540,19 +553,19 @@ public class ATM_Machine extends JFrame {
 								JOptionPane.showMessageDialog(null, "Receipt saved as txt file: " + fileMain.getName(), "Want a receipt?", JOptionPane.INFORMATION_MESSAGE);
 							}
 
-							JOptionPane.showMessageDialog(null, "\nHave a nice day!");
+							JOptionPane.showMessageDialog(null, "\nHave a nice day!", "Goodbye", JOptionPane.QUESTION_MESSAGE);
 							System.exit(0);
 							break;
 						}
 
 						default: {
-							JOptionPane.showMessageDialog(null, "Invalid option!");
+							JOptionPane.showMessageDialog(null, "Invalid option!", "Warning", JOptionPane.QUESTION_MESSAGE);
 							break;
 						}
 					}
 
 			} catch(InputMismatchException inputMismatchException) {
-				JOptionPane.showMessageDialog(null, "\tError! Enter a number choice. Invalid option!\n");
+				JOptionPane.showMessageDialog(null, "\tError! Enter a number choice. Invalid option!\n", "Warning", JOptionPane.QUESTION_MESSAGE);
 				input.nextLine();
 			}
 		}while(select != "6");

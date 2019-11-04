@@ -377,10 +377,9 @@ public class ATM_Machine extends JFrame {
 	public static void main(String[] args) throws IOException {
 
 		final File fileMain = new File("Receipt.txt");
-	    final PrintWriter file = new PrintWriter(fileMain);
+		final PrintWriter file = new PrintWriter(fileMain);
 
 		Date date = new Date();
-		file.printf("\tCity Central Bank\n\nToday is: %s\n", date);
 
 		Console console = System.console();
 
@@ -390,6 +389,7 @@ public class ATM_Machine extends JFrame {
 			if (attempt == 3) {
 				JOptionPane.showMessageDialog(null, "Max tries exceeded, ATM System locked! Restart to unlock", "ATM",
 						JOptionPane.QUESTION_MESSAGE);
+				file.close();
 				System.exit(0);
 			}
 
@@ -400,10 +400,13 @@ public class ATM_Machine extends JFrame {
 					JOptionPane.QUESTION_MESSAGE);
 			acctNo = acctNo.trim();
 
+			file.printf("\tCity Central Bank\n\nToday is: %s\n", now.format(tf));
+
 			attempt++;
 
 			if (acctNo.equals("cancel")) {
 				JOptionPane.showMessageDialog(null, "Have a nice day!", "Goodbye", JOptionPane.QUESTION_MESSAGE);
+				file.close();
 				System.exit(0);
 			}
 
@@ -418,6 +421,7 @@ public class ATM_Machine extends JFrame {
 			if (attempt == 3) {
 				JOptionPane.showMessageDialog(null, "Max tries exceeded, ATM System locked! Restart to unlock", "ATM",
 						JOptionPane.QUESTION_MESSAGE);
+				file.close();
 				System.exit(0);
 			}
 
@@ -477,8 +481,7 @@ public class ATM_Machine extends JFrame {
 		menu(account, file, select, savCheck, fileMain);
 	}
 
-	public static void menu(Account account, PrintWriter file, String select, String savCheck, File fileMain)
-			throws IOException {
+	public static void menu(Account account, PrintWriter file, String select, String savCheck, File fileMain) throws IOException {
 		boolean acctTerminated = false;
 
 		do {
@@ -495,7 +498,7 @@ public class ATM_Machine extends JFrame {
 					if (account != null) {
 						JOptionPane.showMessageDialog(null, account, "Balance Inquiry",
 								JOptionPane.INFORMATION_MESSAGE);
-						file.print("Balance inquiry...\n" + account);
+						file.print("\nBalance inquiry...\n" + account);
 					} else if (account == null) {
 						JOptionPane.showMessageDialog(null, "Account is empty", "Warning!",
 								JOptionPane.INFORMATION_MESSAGE);
@@ -569,16 +572,21 @@ public class ATM_Machine extends JFrame {
 					file.print("\n\nHave a nice day!");
 					String in = JOptionPane.showInputDialog(null, "\nWould you like a receipt? ", "Receipt?",
 							JOptionPane.QUESTION_MESSAGE);
+
 					file.close();
 
 					if (in.equals("No") || in.equals("no")) {
 						fileMain.delete();
+						JOptionPane.showMessageDialog(null, "\nHave a nice day!", "Goodbye", JOptionPane.QUESTION_MESSAGE);
 					} else {
 						JOptionPane.showMessageDialog(null, "Receipt saved as txt file: " + fileMain.getName(),
-								"Want a receipt?", JOptionPane.INFORMATION_MESSAGE);
+								"Receipt", JOptionPane.INFORMATION_MESSAGE);
+						Runtime rt = Runtime.getRuntime();
+						String file1 = "C:\\Users\\brian\\Desktop\\Brian's Folder\\FSU Courses\\My Projects\\ATM\\Receipt.txt";
+						JOptionPane.showMessageDialog(null, "\nHave a nice day!", "Goodbye", JOptionPane.QUESTION_MESSAGE);
+						Process p = rt.exec("notepad " + file1);
 					}
 
-					JOptionPane.showMessageDialog(null, "\nHave a nice day!", "Goodbye", JOptionPane.QUESTION_MESSAGE);
 					System.exit(0);
 					break;
 				}
@@ -587,7 +595,7 @@ public class ATM_Machine extends JFrame {
 					JOptionPane.showMessageDialog(null, "Invalid option!", "Warning", JOptionPane.QUESTION_MESSAGE);
 					break;
 				}
-				}
+			}
 
 			} catch (InputMismatchException inputMismatchException) {
 				JOptionPane.showMessageDialog(null, "\tError! Enter a number choice. Invalid option!\n", "Warning",

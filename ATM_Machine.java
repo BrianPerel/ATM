@@ -399,6 +399,7 @@ public class ATM_Machine extends JFrame {
 			acctNo = JOptionPane.showInputDialog(null,
 					"City Central Bank\nToday is: " + now.format(tf) + "\n\nAccount Number: ", "ATM",
 					JOptionPane.QUESTION_MESSAGE);
+
 			acctNo = acctNo.trim();
 
 			file.printf("\tCity Central Bank\n\nToday is: %s\n", now.format(tf));

@@ -390,6 +390,7 @@ public class ATM_Machine extends JFrame {
 				JOptionPane.showMessageDialog(null, "Max tries exceeded, ATM System locked! Restart to unlock", "ATM",
 						JOptionPane.QUESTION_MESSAGE);
 				file.close();
+				fileMain.delete();
 				System.exit(0);
 			}
 
@@ -407,6 +408,7 @@ public class ATM_Machine extends JFrame {
 			if (acctNo.equals("cancel")) {
 				JOptionPane.showMessageDialog(null, "Have a nice day!", "Goodbye", JOptionPane.QUESTION_MESSAGE);
 				file.close();
+				fileMain.delete();
 				System.exit(0);
 			}
 
@@ -422,6 +424,7 @@ public class ATM_Machine extends JFrame {
 				JOptionPane.showMessageDialog(null, "Max tries exceeded, ATM System locked! Restart to unlock", "ATM",
 						JOptionPane.QUESTION_MESSAGE);
 				file.close();
+				fileMain.delete();
 				System.exit(0);
 			}
 
@@ -600,6 +603,7 @@ public class ATM_Machine extends JFrame {
 			} catch (InputMismatchException inputMismatchException) {
 				JOptionPane.showMessageDialog(null, "\tError! Enter a number choice. Invalid option!\n", "Warning",
 						JOptionPane.QUESTION_MESSAGE);
+
 				input.nextLine();
 			}
 		} while (select != "6");

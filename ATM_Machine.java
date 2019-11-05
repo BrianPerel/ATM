@@ -582,7 +582,7 @@ public class ATM_Machine extends JFrame {
 						JOptionPane.showMessageDialog(null, "Receipt saved as txt file: " + fileMain.getName(),
 								"Receipt", JOptionPane.INFORMATION_MESSAGE);
 						Runtime rt = Runtime.getRuntime();
-						String file1 = "C:\\Users\\brian\\Desktop\\Brian's Folder\\FSU Courses\\My Projects\\ATM\\Receipt.txt";
+						String file1 = "Receipt.txt";
 						JOptionPane.showMessageDialog(null, "\nHave a nice day!", "Goodbye", JOptionPane.QUESTION_MESSAGE);
 						Process p = rt.exec("notepad " + file1);
 					}

@@ -1,5 +1,3 @@
-//package ATM;
-
 /**
 * @author Brian Perel
 * @version 1.0
@@ -28,6 +26,8 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.io.IOException;
 import java.util.Date;
+import javax.swing.JPanel;
+import javax.swing.JLabel;
 import javax.swing.*;
 import java.awt.*;
 import java.text.DecimalFormat;
@@ -146,6 +146,7 @@ abstract class ATM {
 	public abstract void transferFunds(String acctNo2, PrintWriter file) throws IOException;
 }
 
+
 class DepositFunds extends ATM {
 	// for decimal rounding to 2nd place
 	static DecimalFormat df = new DecimalFormat("$###,###.00");
@@ -206,6 +207,7 @@ class DepositFunds extends ATM {
 	public void transferFunds(String acctNo2, PrintWriter file) throws IOException {
 	}
 }
+
 
 class WithdrawalFunds extends ATM {
 

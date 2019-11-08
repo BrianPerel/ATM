@@ -19,12 +19,15 @@ GUI design: window 1 = appears, enter acctno, if acctno is correct proceed to 2n
 			sub windows = 1 appears for each option entered
 */
 
+
+import java.io.*;
 import java.util.Scanner;
 import java.io.Console;
 import java.util.InputMismatchException;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Date;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
@@ -34,7 +37,7 @@ import java.text.DecimalFormat;
 import java.time.format.DateTimeFormatter;
 import java.text.NumberFormat;
 
-class Account {
+class Account implements java.io.Serializable {
 
 	private int number;
 	private String acctNo;
@@ -369,17 +372,21 @@ class TransferFunds extends ATM {
 	}
 }
 
+
+
 public class ATM_Machine extends JFrame {
 
 	static String acctNo;
 	static String pin = "";
 	static Scanner input = new Scanner(System.in);
 	private Button button_1;
+	static DecimalFormat df = new DecimalFormat("$###,###.00");
 
 	public static void main(String[] args) throws IOException {
 
 		final File fileMain = new File("Receipt.txt");
 		final PrintWriter file = new PrintWriter(fileMain);
+
 
 		Date date = new Date();
 
@@ -496,7 +503,8 @@ public class ATM_Machine extends JFrame {
 				select = JOptionPane.showInputDialog(null,
 						"Enter:\n\t1. (1) for balance inquiry\n\t2. (2) for cash withdrawal"
 								+ "\n\t3. (3) for cash deposit\n\t4. (4) to terminate account\n\t5."
-								+ " (5) to transfer funds\n\t6. (6) to quit\n\n\tSelect your transaction: \n",
+								+ " (5) to transfer funds\n\t6. (6) (Save) Serialize Account"
+								+ "\n\t7. (7) (Load) Deserialize Account \n\t8. (8) to quit\n\n\tSelect your transaction: \n",
 						"ATM", JOptionPane.QUESTION_MESSAGE);
 
 				switch (select) {
@@ -573,15 +581,66 @@ public class ATM_Machine extends JFrame {
 					t1.transferFunds(acctNo2, file);
 					break;
 				}
-
 				case "6": {
+					// create file to save object state to
+					String filename = "Data.dat";
+
+					// Serialization
+					try {
+						// Saving of object in a file
+						FileOutputStream file1 = new FileOutputStream(filename);
+						ObjectOutputStream out = new ObjectOutputStream(file1);
+
+						// method for serialization of object
+						out.writeObject(account);
+
+						// close method for serialization of object
+						out.close();
+						file1.close();
+
+						JOptionPane.showMessageDialog(null, "\nObject has been serialized", "Serialize", JOptionPane.QUESTION_MESSAGE);
+					}
+					catch(IOException ex) {
+						System.out.println("IOException is caught");
+					}
+
+					break;
+				}
+
+				case "7": {
+					String filename = "Data.dat";
+
+					Account account1 = null;
+
+					// Deserialization
+					try {
+						FileInputStream file2 = new FileInputStream(filename);
+						ObjectInputStream in = new ObjectInputStream(file2);
+
+						account1 = (Account)in.readObject(); // store the content from binary file to a reference variable (object)
+
+						// print out the saved data from binary file
+						JOptionPane.showMessageDialog(null, "\nAccount Number: " + account1.getAcctNo() + "\nAccount Pin: " +
+												account1.getPIN() + "\nAccount Balance: " + df.format(account1.getBalance()) + "\nAccount type: " +
+												account1.getType(), "Deserialize", JOptionPane.QUESTION_MESSAGE);
+					}
+					catch(IOException ex) {
+						System.out.println("IOException is caught");
+					}
+					catch(ClassNotFoundException ex) {
+						System.out.println("ClassNotFoundException is caught");
+					}
+
+					break;
+				}
+
+				case "8": {
 					file.print("\n\nHave a nice day!");
 					String in = JOptionPane.showInputDialog(null, "\nWould you like a receipt? ", "Receipt?",
 							JOptionPane.QUESTION_MESSAGE);
 
 					file.close();
-
-					if (in.equals("No") || in.equals("no")) {
+					if (in.equals("No") || in.equals("no") || in.equals("NO")) {
 						fileMain.delete();
 						JOptionPane.showMessageDialog(null, "\nHave a nice day!", "Goodbye", JOptionPane.QUESTION_MESSAGE);
 					} else {
@@ -609,6 +668,6 @@ public class ATM_Machine extends JFrame {
 
 				input.nextLine();
 			}
-		} while (select != "6");
+		} while (select != "8");
 	}
 }

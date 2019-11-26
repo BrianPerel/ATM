@@ -20,22 +20,27 @@ GUI design: window 1 = appears, enter acctno, if acctno is correct proceed to 2n
 */
 
 
-import java.io.*;
 import java.util.Scanner;
-import java.io.Console;
 import java.util.InputMismatchException;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Date;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JFrame;
+import javax.swing.JPasswordField;
+import javax.swing.JOptionPane;
+import java.awt.Button;
 import java.text.DecimalFormat;
 import java.time.format.DateTimeFormatter;
 import java.text.NumberFormat;
+
+
 
 class Account implements java.io.Serializable {
 
@@ -117,7 +122,7 @@ class Account implements java.io.Serializable {
 
 	@Override
 	public boolean equals(Object o) {
-		if (o == null || !(o instanceof Account)) {
+		if (o == null || !(o instanceof Account) || o != this) {
 			return false;
 		} else
 			return true;
@@ -128,6 +133,8 @@ class Account implements java.io.Serializable {
 		return number * 12;
 	}
 }
+
+
 
 // abstract class, since it will be overwritten
 abstract class ATM {
@@ -148,6 +155,7 @@ abstract class ATM {
 
 	public abstract void transferFunds(String acctNo2, PrintWriter file) throws IOException;
 }
+
 
 
 class DepositFunds extends ATM {
@@ -387,11 +395,6 @@ public class ATM_Machine extends JFrame {
 		final File fileMain = new File("Receipt.txt");
 		final PrintWriter file = new PrintWriter(fileMain);
 
-
-		Date date = new Date();
-
-		Console console = System.console();
-
 		int attempt = 0;
 
 		do {
@@ -405,11 +408,18 @@ public class ATM_Machine extends JFrame {
 
 			DateTimeFormatter tf = DateTimeFormatter.ofPattern("MMM dd, h:mm a");
 			java.time.LocalDateTime now = java.time.LocalDateTime.now();
-			acctNo = JOptionPane.showInputDialog(null,
+
+
+			try {
+				acctNo = JOptionPane.showInputDialog(null,
 					"City Central Bank\nToday is: " + now.format(tf) + "\n\nAccount Number: ", "ATM",
 					JOptionPane.QUESTION_MESSAGE);
 
-			acctNo = acctNo.trim();
+				acctNo = acctNo.trim();
+
+			} catch(Exception e) {
+				System.exit(0);
+			}
 
 			file.printf("\tCity Central Bank\n\nToday is: %s\n", now.format(tf));
 
@@ -545,7 +555,7 @@ public class ATM_Machine extends JFrame {
 
 				case "4": {
 					if (acctTerminated == true) {
-						JOptionPane.showMessageDialog(null, "Account is already empty, can't transfer!", "Warning!",
+						JOptionPane.showMessageDialog(null, "Account is already empty!", "Warning!",
 								JOptionPane.INFORMATION_MESSAGE);
 						continue;
 					}
@@ -574,7 +584,7 @@ public class ATM_Machine extends JFrame {
 							JOptionPane.showMessageDialog(null, "Invalid Account!", "Warning!",
 									JOptionPane.INFORMATION_MESSAGE);
 						}
-					} while (acctNo.equals(acctNo2)
+					} while(acctNo.equals(acctNo2)
 							|| (acctNo2.length() < 6 || acctNo2.length() > 6 || (acctNo2.matches("[0-9]+") == false)));
 					Account account2 = new Account(acctNo2, pin, (Math.random() % 21) * 100000, savCheck);
 					ATM t1 = new TransferFunds(account, account2);
@@ -582,7 +592,12 @@ public class ATM_Machine extends JFrame {
 					break;
 				}
 				case "6": {
-					// create file to save object state to
+					if (acctTerminated == true) {
+						JOptionPane.showMessageDialog(null, "Account is empty, can't serialize!", "Warning!",
+								JOptionPane.INFORMATION_MESSAGE);
+						continue;
+					}
+					// create binary file (.dat = data file) to save object state to
 					String filename = "Data.dat";
 
 					// Serialization
@@ -610,7 +625,7 @@ public class ATM_Machine extends JFrame {
 				case "7": {
 					String filename = "Data.dat";
 
-					Account account1 = null;
+					Account account1 = null; // create the empty object, request os to allocate chunk of memory to store contents from file
 
 					// Deserialization
 					try {
@@ -618,6 +633,7 @@ public class ATM_Machine extends JFrame {
 						ObjectInputStream in = new ObjectInputStream(file2);
 
 						account1 = (Account)in.readObject(); // store the content from binary file to a reference variable (object)
+															 // after reading = deserialize
 
 						// print out the saved data from binary file
 						JOptionPane.showMessageDialog(null, "\nAccount Number: " + account1.getAcctNo() + "\nAccount Pin: " +
@@ -625,10 +641,10 @@ public class ATM_Machine extends JFrame {
 												account1.getType(), "Deserialize", JOptionPane.QUESTION_MESSAGE);
 					}
 					catch(IOException ex) {
-						System.out.println("IOException is caught");
+						System.out.println("Deserialization error!");
 					}
 					catch(ClassNotFoundException ex) {
-						System.out.println("ClassNotFoundException is caught");
+						System.out.println("Class not found error!");
 					}
 
 					break;

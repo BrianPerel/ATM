@@ -39,7 +39,6 @@ import javax.swing.JOptionPane;
 import java.awt.Button;
 import java.text.DecimalFormat;
 import java.time.format.DateTimeFormatter;
-import java.text.NumberFormat;
 
 
 
@@ -433,10 +432,10 @@ public class ATM_Machine extends JFrame {
 				System.exit(0);
 			}
 
-			if (acctNo.length() != 6 || (acctNo.matches("[0-9]+") == false))
+			if (acctNo.length() != 8 || (acctNo.matches("[0-9]+") == false))
 				JOptionPane.showMessageDialog(null, "Invalid Account Number!", "Warning", JOptionPane.WARNING_MESSAGE);
 
-		} while (acctNo.length() != 6 || (acctNo.matches("[0-9]+") == false));
+		} while (acctNo.length() != 8 || (acctNo.matches("[0-9]+") == false));
 
 		attempt = 0;
 

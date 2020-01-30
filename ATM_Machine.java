@@ -10,14 +10,13 @@
 * -Validate all user input: exception, type and condition handling
 * -Save information to receipt txt file, at end of program ask if client wants a receipt or not, if not receipt file is deleted
 * -All currency is in USD $
-*/
 
 
-/*
-GUI design: window 1 = appears, enter acctno, if acctno is correct proceed to 2nd window
+* GUI design: window 1 = appears, enter acctno, if acctno is correct proceed to 2nd window
 			window 2 = appears, enter pin, if pin is correct proceed to 3rd window
 			window 3 = show 6 options
 			sub windows = 1 appears for each option entered
+
 */
 
 
@@ -41,7 +40,10 @@ import java.text.DecimalFormat;
 import java.time.format.DateTimeFormatter;
 
 
-
+/*
+* -Class to setup Account object, use Serializable interface to use serialize operations
+* -Attributes: account type, number, pin, balance
+*/
 class Account implements java.io.Serializable {
 
 	private int number;
@@ -136,9 +138,12 @@ class Account implements java.io.Serializable {
 
 
 
-// abstract class, since it will be overwritten
+/*
+* -Abstract class, since it's methods will be overwritten by sub classes
+* -We need the account field so that we can call methods of account class
+* -Has method to display the balance, holds abstract methods for basic app operations
+*/
 abstract class ATM {
-	// we need this so that we can call methods of account class
 	private final Account account;
 
 	public ATM(Account account) {
@@ -157,10 +162,12 @@ abstract class ATM {
 }
 
 
-
+/*
+* -Inherit ATM program for primary methods / operations
+* -Performs deposit operation
+*/
 class DepositFunds extends ATM {
-	// for decimal rounding (to 2 places and comma insertion)
-	static DecimalFormat df = new DecimalFormat("$###,###.00");
+	static DecimalFormat df = new DecimalFormat("$###,###.00");   // for decimal rounding (to 2 places and comma insertion)
 	private final Account account;
 
 	public DepositFunds(Account account) {
@@ -219,7 +226,10 @@ class DepositFunds extends ATM {
 	}
 }
 
-
+/*
+* -Inherit ATM program for primary methods / operations
+* -Performs withdraw operations
+*/
 class WithdrawalFunds extends ATM {
 
 	private final Account account;
@@ -236,7 +246,7 @@ class WithdrawalFunds extends ATM {
 		String money0;
 
 		do {
-			money0 = JOptionPane.showInputDialog(null, "\nWithdraw amount: $", "ATM", JOptionPane.QUESTION_MESSAGE);
+			money0 = JOptionPane.showInputDialog(null, "\nWithdraw amount: $", "Withdraw", JOptionPane.QUESTION_MESSAGE);
 
 			if (money0.matches("[0-9]+") == false)
 				JOptionPane.showMessageDialog(null, "Invalid amount!", "Warning", JOptionPane.WARNING_MESSAGE);
@@ -294,6 +304,11 @@ class WithdrawalFunds extends ATM {
 	}
 }
 
+
+/*
+* -Inherit ATM program for primary methods / operations
+* -Performs transfer operations
+*/
 class TransferFunds extends ATM {
 
 	private final Account account;
@@ -329,7 +344,7 @@ class TransferFunds extends ATM {
 					"\nTransfer complete!\nYour New Balance for Account 1 (" + account.getAcctNo() + ") is: "
 							+ df.format(this.account.getBalance()) + "\nYour New Balance for Account 2 ("
 							+ this.account2.getAcctNo() + ") is: " + df.format(this.account2.getBalance()),
-					"ATM", JOptionPane.QUESTION_MESSAGE);
+					"ATM - City Central Bank", JOptionPane.QUESTION_MESSAGE);
 
 			file.printf("Transfer complete! Your New Balance for Account " + account.getAcctNo() + " is: "
 					+ df.format(this.account.getBalance()) + "\nYour New Balance for Account " + this.account2.getAcctNo()
@@ -381,7 +396,10 @@ class TransferFunds extends ATM {
 }
 
 
-
+/*
+* -ATM_Machine class will generate GUI
+* -Performs logic operations for data and choices entered
+*/
 public class ATM_Machine extends JFrame {
 
 	static String acctNo, savCheck0;
@@ -412,7 +430,7 @@ public class ATM_Machine extends JFrame {
 
 			try {
 				acctNo = JOptionPane.showInputDialog(null,
-					"City Central Bank\nToday is: " + now.format(tf) + "\n\nAccount Number: ", "ATM",
+					"Today is: " + now.format(tf) + "\nAccount Number: ", "ATM - City Central Bank",
 					JOptionPane.QUESTION_MESSAGE);
 
 				acctNo = acctNo.trim();
@@ -421,7 +439,7 @@ public class ATM_Machine extends JFrame {
 				System.exit(0);
 			}
 
-			file.printf("\tCity Central Bank\n\nToday is: %s\n", now.format(tf));
+			file.printf("\n\tATM - City Central Bank\nToday is: %s\n", now.format(tf));
 
 			attempt++;
 
@@ -441,7 +459,7 @@ public class ATM_Machine extends JFrame {
 
 		do {
 			if (attempt == 3) {
-				JOptionPane.showMessageDialog(null, "Max tries exceeded, ATM System locked! Restart to unlock", "ATM",
+				JOptionPane.showMessageDialog(null, "Max tries exceeded, ATM System locked! Restart to unlock", "ATM - City Central Bank",
 						JOptionPane.WARNING_MESSAGE);
 				file.close();
 				fileMain.delete();
@@ -449,22 +467,27 @@ public class ATM_Machine extends JFrame {
 			}
 
 			JPanel panel = new JPanel();
-			JLabel label = new JLabel("Pin:");
+			String custom = "<html><body><div float='left'>Pin: </div></body></html>";
+			JLabel label = new JLabel(custom);
 			JPasswordField pass = new JPasswordField(10);
 			panel.add(label);
 			panel.add(pass);
-			String[] options = new String[] { "OK", "Cancel" };
+			String[] options = new String[] {"OK", "Cancel"};
 
-			int option = JOptionPane.showOptionDialog(null, panel, "ATM", JOptionPane.YES_NO_OPTION,
+			int option = JOptionPane.showOptionDialog(null, panel, "ATM - City Central Bank", JOptionPane.YES_NO_OPTION,
 					JOptionPane.QUESTION_MESSAGE, null, options, null);
 
 			if (option == 0) { // pressing OK button
 
 				char[] password = pass.getPassword();
 				pin = new String(password);
+
 			}else if (option == 1) { // pressing Cancel button
 				System.exit(0);
+			}else {
+				System.exit(0);
 			}
+
 
 			attempt++;
 
@@ -478,7 +501,7 @@ public class ATM_Machine extends JFrame {
 		do {
 			try {
 				do {
-					savCheck0 = JOptionPane.showInputDialog(null, "Savings (s) or Checkings (c): ", "ATM",
+					savCheck0 = JOptionPane.showInputDialog(null, "Savings (s) or Checkings (c): ", "ATM - City Central Bank",
 						JOptionPane.QUESTION_MESSAGE);
 
 				}while(savCheck0.equals(""));
@@ -521,9 +544,10 @@ public class ATM_Machine extends JFrame {
 								+ "\n\t3. (3) for cash deposit\n\t4. (4) to terminate account\n\t5."
 								+ " (5) to transfer funds\n\t6. (6) (Save) Serialize Account"
 								+ "\n\t7. (7) (Load) Deserialize Account \n\t8. (8) to quit\n\n\tSelect your transaction: \n",
-						"ATM", JOptionPane.QUESTION_MESSAGE);
+						"ATM- City Central Bank", JOptionPane.QUESTION_MESSAGE);
 
 				switch (select) {
+
 				case "1": {
 					if (account != null) {
 						JOptionPane.showMessageDialog(null, account, "Balance Inquiry",
@@ -583,7 +607,7 @@ public class ATM_Machine extends JFrame {
 					String acctNo2;
 
 					do {
-						acctNo2 = JOptionPane.showInputDialog(null, "\nAccount Number 2: ", "ATM",
+						acctNo2 = JOptionPane.showInputDialog(null, "\nAccount Number 2: ", "Account Terminated",
 								JOptionPane.QUESTION_MESSAGE);
 						if (acctNo.equals(acctNo2) || acctNo2.length() < 6 || acctNo2.length() > 6
 								|| (acctNo2.matches("[0-9]+") == false)) {

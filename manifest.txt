@@ -1,2 +1,2 @@
 Main-Class: ATM_Machine
-
+icon: atm.ico

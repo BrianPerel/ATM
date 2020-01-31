@@ -19,7 +19,6 @@
 
 */
 
-
 import java.util.Scanner;
 import java.util.InputMismatchException;
 import java.io.File;
@@ -40,7 +39,7 @@ import java.text.DecimalFormat;
 import java.time.format.DateTimeFormatter;
 
 
-/*
+/**
 * -Class to setup Account object, use Serializable interface to use serialize operations
 * -Attributes: account type, number, pin, balance
 */
@@ -138,7 +137,7 @@ class Account implements java.io.Serializable {
 
 
 
-/*
+/**
 * -Abstract class, since it's methods will be overwritten by sub classes
 * -We need the account field so that we can call methods of account class
 * -Has method to display the balance, holds abstract methods for basic app operations
@@ -162,7 +161,7 @@ abstract class ATM {
 }
 
 
-/*
+/**
 * -Inherit ATM program for primary methods / operations
 * -Performs deposit operation
 */
@@ -226,7 +225,7 @@ class DepositFunds extends ATM {
 	}
 }
 
-/*
+/**
 * -Inherit ATM program for primary methods / operations
 * -Performs withdraw operations
 */
@@ -305,7 +304,7 @@ class WithdrawalFunds extends ATM {
 }
 
 
-/*
+/**
 * -Inherit ATM program for primary methods / operations
 * -Performs transfer operations
 */
@@ -395,7 +394,6 @@ class TransferFunds extends ATM {
 	}
 }
 
-
 /*
 * -ATM_Machine class will generate GUI
 * -Performs logic operations for data and choices entered
@@ -436,6 +434,7 @@ public class ATM_Machine extends JFrame {
 				acctNo = acctNo.trim();
 
 			} catch(NullPointerException e) {
+				file.close();
 				fileMain.delete();
 				System.exit(0);
 			}
@@ -468,7 +467,7 @@ public class ATM_Machine extends JFrame {
 			}
 
 			JPanel panel = new JPanel();
-			String custom = "<html><body><div float='left'>Pin: </div></body></html>";
+			String custom = "Pin: ";
 			JLabel label = new JLabel(custom);
 			JPasswordField pass = new JPasswordField(10);
 			panel.add(label);
@@ -484,9 +483,11 @@ public class ATM_Machine extends JFrame {
 				pin = new String(password);
 
 			}else if (option == 1) { // pressing Cancel button
+				file.close();
 				fileMain.delete();
 				System.exit(0);
 			}else {
+				file.close();
 				fileMain.delete();
 				System.exit(0);
 			}
@@ -510,6 +511,8 @@ public class ATM_Machine extends JFrame {
 				}while(savCheck0.equals(""));
 
 			}catch(NullPointerException e) {
+				file.close();
+				fileMain.delete();
 				System.exit(0);
 			}
 
@@ -547,7 +550,7 @@ public class ATM_Machine extends JFrame {
 								+ "\n\t3. (3) for cash deposit\n\t4. (4) to terminate account\n\t5."
 								+ " (5) to transfer funds\n\t6. (6) (Save) Serialize Account"
 								+ "\n\t7. (7) (Load) Deserialize Account \n\t8. (8) to quit\n\n\tSelect your transaction: \n",
-						"ATM- City Central Bank", JOptionPane.QUESTION_MESSAGE);
+						"ATM - City Central Bank", JOptionPane.QUESTION_MESSAGE);
 
 				switch (select) {
 
@@ -718,6 +721,8 @@ public class ATM_Machine extends JFrame {
 				input.nextLine();
 			}
 			catch(NullPointerException e) {
+				file.close();
+				fileMain.delete();
 				System.exit(0);
 			}
 		} while (select != "8");

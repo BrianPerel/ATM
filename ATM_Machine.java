@@ -436,6 +436,7 @@ public class ATM_Machine extends JFrame {
 				acctNo = acctNo.trim();
 
 			} catch(NullPointerException e) {
+				fileMain.delete();
 				System.exit(0);
 			}
 
@@ -483,8 +484,10 @@ public class ATM_Machine extends JFrame {
 				pin = new String(password);
 
 			}else if (option == 1) { // pressing Cancel button
+				fileMain.delete();
 				System.exit(0);
 			}else {
+				fileMain.delete();
 				System.exit(0);
 			}
 

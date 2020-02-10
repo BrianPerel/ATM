@@ -1,23 +1,26 @@
 /**
-* @author Brian Perel
-* @version 1.0
-*
-* -OOP app using Java
-* -ATM functions: display balance, withdrawal, deposit, transfer funds, terminate account
-* -ATM withdrawal should be prevented if balance is below withdrawal amount
-* -ATM deposit should be prevented if deposit amount is extreme
-* -Keep track of 3 attributes: account number, PIN number, account balance
-* -Validate all user input: exception, type and condition handling
-* -Save information to receipt txt file, at end of program ask if client wants a receipt or not, if not receipt file is deleted
-* -All currency is in USD $
-
-
-* GUI design: window 1 = appears, enter acctno, if acctno is correct proceed to 2nd window
-			window 2 = appears, enter pin, if pin is correct proceed to 3rd window
-			window 3 = show 6 options
-			sub windows = 1 appears for each option entered
-
-*/
+ * @author Brian Perel
+ * @version 1.0
+ *
+ * Purpose: Java ATM simulation program allows you to work with an account: do deposit, balance inquery, withdraw, transfer, terminate account operations.
+ * We are simulating this environment to allow a single user to work with a randomly generated account balance and perform ATM operations
+ *
+ * OOP app using Java
+ * ATM functions: display balance, withdrawal, deposit, transfer funds, terminate account
+ * ATM withdrawal should be prevented if balance is below withdrawal amount
+ * ATM deposit should be prevented if deposit amount is extreme
+ * Keep track of 3 attributes: account number, PIN number, account balance
+ * Validate all user input: exception, type and condition handling
+ * Save information to receipt txt file, at end of program ask if client wants a receipt or not, if not receipt file is deleted
+ * All currency is in USD $
+ *
+ *
+ *
+ * GUI design: window 1 = enter acctNo, window 2 = enter pin, window 3 = enter acctType (savings or checkings)
+ *			window 4 = show ATM user menu options
+ *				sub windows = 1 appears for each option entered
+ *
+ */
 
 import java.util.Scanner;
 import java.util.InputMismatchException;
@@ -40,9 +43,9 @@ import java.time.format.DateTimeFormatter;
 
 
 /**
-* -Class to setup Account object, use Serializable interface to use serialize operations
-* -Attributes: account type, number, pin, balance
-*/
+ * Class to setup Account object, use Serializable interface to use serialize operations
+ * Attributes: account type, number, pin, balance
+ */
 class Account implements java.io.Serializable {
 
 	private int number;
@@ -138,10 +141,10 @@ class Account implements java.io.Serializable {
 
 
 /**
-* -Abstract class, since it's methods will be overwritten by sub classes
-* -We need the account field so that we can call methods of account class
-* -Has method to display the balance, holds abstract methods for basic app operations
-*/
+ * Abstract class, since it's methods will be overwritten by sub classes
+ * We need the account field so that we can call methods of account class
+ * Has method to display the balance, holds abstract methods for basic app operations
+ */
 abstract class ATM {
 	private final Account account;
 
@@ -162,9 +165,9 @@ abstract class ATM {
 
 
 /**
-* -Inherit ATM program for primary methods / operations
-* -Performs deposit operation
-*/
+ * Inherit ATM program for primary methods / operations
+ * Performs deposit operation
+ */
 class DepositFunds extends ATM {
 	static DecimalFormat df = new DecimalFormat("$###,###.00");   // for decimal rounding (to 2 places and comma insertion)
 	private final Account account;
@@ -226,9 +229,9 @@ class DepositFunds extends ATM {
 }
 
 /**
-* -Inherit ATM program for primary methods / operations
-* -Performs withdraw operations
-*/
+ * Inherit ATM program for primary methods / operations
+ * Performs withdraw operations
+ */
 class WithdrawalFunds extends ATM {
 
 	private final Account account;
@@ -305,9 +308,9 @@ class WithdrawalFunds extends ATM {
 
 
 /**
-* -Inherit ATM program for primary methods / operations
-* -Performs transfer operations
-*/
+ * Inherit ATM program for primary methods / operations
+ * Performs transfer operations
+ */
 class TransferFunds extends ATM {
 
 	private final Account account;
@@ -394,10 +397,10 @@ class TransferFunds extends ATM {
 	}
 }
 
-/*
-* -ATM_Machine class will generate GUI
-* -Performs logic operations for data and choices entered
-*/
+/**
+ * ATM_Machine class will generate GUI
+ * Performs logic operations for data and choices entered
+ */
 public class ATM_Machine extends JFrame {
 
 	static String acctNo, savCheck0;
@@ -633,8 +636,7 @@ public class ATM_Machine extends JFrame {
 								JOptionPane.WARNING_MESSAGE);
 						continue;
 					}
-					// create binary file (.dat = data file) to save object state to
-					String filename = "Data.dat";
+					String filename = "Data.dat"; // create binary file (.dat = data file) to save object state to
 
 					// Serialization
 					try {

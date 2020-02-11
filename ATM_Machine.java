@@ -5,6 +5,8 @@
  * Purpose: Java ATM simulation program allows you to work with an account: do deposit, balance inquery, withdraw, transfer, terminate account operations.
  * We are simulating this environment to allow a single user to work with a randomly generated account balance and perform ATM operations
  *
+ * To get to menu screen: enter account number (must be 8 digits), then enter pin (4 digits) at next window
+ *
  * OOP app using Java
  * ATM functions: display balance, withdrawal, deposit, transfer funds, terminate account
  * ATM withdrawal should be prevented if balance is below withdrawal amount
@@ -13,7 +15,6 @@
  * Validate all user input: exception, type and condition handling
  * Save information to receipt txt file, at end of program ask if client wants a receipt or not, if not receipt file is deleted
  * All currency is in USD $
- *
  *
  *
  * GUI design: window 1 = enter acctNo, window 2 = enter pin, window 3 = enter acctType (savings or checkings)
@@ -186,10 +187,10 @@ class DepositFunds extends ATM {
 			money0 = JOptionPane.showInputDialog(null, "\n\nDeposit amount: $", "Deposit",
 					JOptionPane.QUESTION_MESSAGE);
 
-			if (money0.matches("[0-9]+") == false)
+			if (money0.matches("[0-9.]+") == false)
 				JOptionPane.showMessageDialog(null, "Invalid amount!", "Warning", JOptionPane.WARNING_MESSAGE);
 
-		} while (money0.matches("[0-9]+") == false);
+		} while (money0.matches("[0-9.]+") == false);
 
 		double money = Double.parseDouble(money0);
 		file.println("\n\tDeposit amount: $" + money);
@@ -250,10 +251,10 @@ class WithdrawalFunds extends ATM {
 		do {
 			money0 = JOptionPane.showInputDialog(null, "\nWithdraw amount: $", "Withdraw", JOptionPane.QUESTION_MESSAGE);
 
-			if (money0.matches("[0-9]+") == false)
+			if (money0.matches("[0-9.]+") == false)
 				JOptionPane.showMessageDialog(null, "Invalid amount!", "Warning", JOptionPane.WARNING_MESSAGE);
 
-		} while (money0.matches("[0-9]+") == false);
+		} while (money0.matches("[0-9.]+") == false);
 
 		final double money = Double.parseDouble(money0);
 		file.print("\n\tWithdraw amount: $" + money);
@@ -331,10 +332,10 @@ class TransferFunds extends ATM {
 		do {
 			money0 = JOptionPane.showInputDialog(null, "\nTransfer amount: $", "ATM", JOptionPane.QUESTION_MESSAGE);
 
-			if (money0.matches("[0-9]+") == false)
+			if (money0.matches("[0-9.]+") == false)
 				JOptionPane.showMessageDialog(null, "Invalid amount!", "Warning", JOptionPane.WARNING_MESSAGE);
 
-		} while (money0.matches("[0-9]+") == false);
+		} while (money0.matches("[0-9.]+") == false);
 
 		double money = Double.parseDouble(money0);
 		file.print("\n\tTransfer amount: $" + money);
@@ -511,6 +512,9 @@ public class ATM_Machine extends JFrame {
 					savCheck0 = JOptionPane.showInputDialog(null, "Savings (s) or Checkings (c): ", "ATM - City Central Bank",
 						JOptionPane.QUESTION_MESSAGE);
 
+					if(savCheck0.equals(""))
+						JOptionPane.showMessageDialog(null, "Invalid Response!", "Warning", JOptionPane.WARNING_MESSAGE);
+
 				}while(savCheck0.equals(""));
 
 			}catch(NullPointerException e) {
@@ -618,13 +622,13 @@ public class ATM_Machine extends JFrame {
 					do {
 						acctNo2 = JOptionPane.showInputDialog(null, "\nAccount Number 2: ", "Account Terminated",
 								JOptionPane.QUESTION_MESSAGE);
-						if (acctNo.equals(acctNo2) || acctNo2.length() < 6 || acctNo2.length() > 6
+						if (acctNo.equals(acctNo2) || acctNo2.length() < 8 || acctNo2.length() > 8
 								|| (acctNo2.matches("[0-9]+") == false)) {
 							JOptionPane.showMessageDialog(null, "Invalid Account!", "Warning!",
 									JOptionPane.WARNING_MESSAGE);
 						}
 					} while(acctNo.equals(acctNo2)
-							|| (acctNo2.length() < 6 || acctNo2.length() > 6 || (acctNo2.matches("[0-9]+") == false)));
+							|| (acctNo2.length() < 8 || acctNo2.length() > 8 || (acctNo2.matches("[0-9]+") == false)));
 					Account account2 = new Account(acctNo2, pin, (Math.random() % 21) * 100000, savCheck);
 					ATM t1 = new TransferFunds(account, account2);
 					t1.transferFunds(acctNo2, file);

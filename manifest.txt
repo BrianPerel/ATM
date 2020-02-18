@@ -1,2 +1,2 @@
-Main-Class: ATM_Machine
+Main-Class: ATM_Machine_Driver
 icon: atm.ico

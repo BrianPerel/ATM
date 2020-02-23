@@ -41,14 +41,14 @@ import javax.swing.JOptionPane;
 import java.awt.Button;
 import java.text.DecimalFormat;
 import java.time.format.DateTimeFormatter;
-
+import java.sql.*;
 
 
 /**
  * ATM_Machine class will generate GUI
  * Performs logic operations for data and choices entered
  */
-public class ATM_Machine_Driver extends JFrame {
+public class ATM_Machine_Main extends JFrame {
 
 	static String acctNo, savCheck0;
 	static String pin = "";
@@ -56,7 +56,10 @@ public class ATM_Machine_Driver extends JFrame {
 	private Button button_1;
 	static DecimalFormat df = new DecimalFormat("$###,###.00");
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, SQLException {
+
+	    //	DBConnector connect = new DBConnector(); // connect class to DB class to perform db operations
+		//	connect.deleteDB();
 
 		final File fileMain = new File("Receipt.txt");
 		final PrintWriter file = new PrintWriter(fileMain);
@@ -142,7 +145,6 @@ public class ATM_Machine_Driver extends JFrame {
 				System.exit(0);
 			}
 
-
 			attempt++;
 
 			if(pin.length() != 4 || (pin.matches("[0-9]+") == false))
@@ -189,11 +191,13 @@ public class ATM_Machine_Driver extends JFrame {
 		Account account = new Account(acctNo, pin, ((Math.random() % 23) * 100000), savCheck2);
 
 		String select = "0";
+
 		menu(account, file, select, savCheck, fileMain);
 	}
 
-	public static void menu(Account account, PrintWriter file, String select, String savCheck, File fileMain) throws IOException {
+	public static void menu(Account account, PrintWriter file, String select, String savCheck, File fileMain) throws IOException, SQLException {
 		boolean acctTerminated = false;
+		DBConnector connect = new DBConnector(); // connect class to DB class to perform db operations
 
 		do {
 
@@ -205,7 +209,10 @@ public class ATM_Machine_Driver extends JFrame {
 								+ "\n\t7. (7) (Load) Deserialize Account \n\t8. (8) to quit\n\n\tSelect your transaction: \n",
 						"ATM - City Central Bank", JOptionPane.QUESTION_MESSAGE);
 
+				String bal = df.format(account.getBalance());
+				connect.addData(Integer.parseInt(acctNo), Integer.parseInt(pin), bal, savCheck);
 				switch (select) {
+
 
 				case "1": {
 					if (account != null) {
@@ -249,9 +256,12 @@ public class ATM_Machine_Driver extends JFrame {
 						continue;
 					}
 
+					connect.terminateAccount(Integer.parseInt(account.getAcctNo())); // deletes account from db table @ localhost site
+
 					account = null;
 					JOptionPane.showMessageDialog(null, "\nAccount has been terminated\n", "Account Termination",
 							JOptionPane.INFORMATION_MESSAGE);
+
 					file.println("\nAccount has been terminated");
 					acctTerminated = true;
 					break;

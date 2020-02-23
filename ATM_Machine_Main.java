@@ -58,7 +58,7 @@ public class ATM_Machine_Main extends JFrame {
 
 	public static void main(String[] args) throws IOException, SQLException {
 
-	    //	DBConnector connect = new DBConnector(); // connect class to DB class to perform db operations
+		// DBConnector connect = new DBConnector(); // connect class to DB class to perform db operations
 		//	connect.deleteDB();  // statement to delete db
 
 		final File fileMain = new File("Receipt.txt");
@@ -195,12 +195,15 @@ public class ATM_Machine_Main extends JFrame {
 		String select = "0";
 
 		// load to menu
-		menu(account, file, select, savCheck, fileMain);
+		menu(account, file, select, savCheck2, fileMain);
 	}
 
 	public static void menu(Account account, PrintWriter file, String select, String savCheck, File fileMain) throws IOException, SQLException {
 		boolean acctTerminated = false; // flag checks if account has been terminated by user or not
-		DBConnector connect = new DBConnector(); // connect class to DB class to perform db operations
+
+	    DBConnector connect = new DBConnector(); // connect class to DB class to perform db operations
+	    String bal = df.format(account.getBalance());
+	    connect.addData(Integer.parseInt(acctNo), Integer.parseInt(pin), bal, savCheck); // add data to db
 
 		do {
 			try {
@@ -211,9 +214,6 @@ public class ATM_Machine_Main extends JFrame {
 								+ " (5) to transfer funds\n\t6. (6) (Save) Serialize Account"
 								+ "\n\t7. (7) (Load) Deserialize Account \n\t8. (8) to quit\n\n\tSelect your transaction: \n",
 						"ATM - City Central Bank", JOptionPane.QUESTION_MESSAGE);
-
-				String bal = df.format(account.getBalance());
-				connect.addData(Integer.parseInt(acctNo), Integer.parseInt(pin), bal, savCheck); // add data to db
 
 				switch (select) {
 

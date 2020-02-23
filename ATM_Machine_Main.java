@@ -5,14 +5,14 @@
  * Purpose: Java ATM simulation program allows you to work with an account: do deposit, balance inquery, withdraw, transfer, terminate account operations.
  * We are simulating this environment to allow a single user to work with a randomly generated account balance and perform ATM operations
  *
- * To get to menu screen: enter account number (must be 8 digits), then enter pin (4 digits) at next window
+ * To get to menu screen: enter account number (must be 8 digits), then enter pin (4 digits) at next window, enter savings or checkings for acct type
  *
  * OOP app using Java
- * ATM functions: display balance, withdrawal, deposit, transfer funds, terminate account
+ * ATM functions: display balance, withdrawal, deposit, transfer funds, terminate account, serialization - deserialization
  * ATM withdrawal should be prevented if balance is below withdrawal amount
  * ATM deposit should be prevented if deposit amount is extreme
- * Keep track of 3 attributes: account number, PIN number, account balance
- * Validate all user input: exception, type and condition handling
+ * Keep track of 4 attributes: account number, PIN number, account balance, account type
+ * Validate all user input: exception, type, format and condition handling
  * Save information to receipt txt file, at end of program ask if client wants a receipt or not, if not receipt file is deleted
  * All currency is in USD $
  *
@@ -59,7 +59,7 @@ public class ATM_Machine_Main extends JFrame {
 	public static void main(String[] args) throws IOException, SQLException {
 
 	    //	DBConnector connect = new DBConnector(); // connect class to DB class to perform db operations
-		//	connect.deleteDB();
+		//	connect.deleteDB();  // statement to delete db
 
 		final File fileMain = new File("Receipt.txt");
 		final PrintWriter file = new PrintWriter(fileMain);
@@ -75,6 +75,7 @@ public class ATM_Machine_Main extends JFrame {
 				System.exit(0);
 			}
 
+			// format date and time for display
 			DateTimeFormatter tf = DateTimeFormatter.ofPattern("MMM dd, h:mm a");
 			java.time.LocalDateTime now = java.time.LocalDateTime.now();
 
@@ -84,7 +85,7 @@ public class ATM_Machine_Main extends JFrame {
 					"Today is: " + now.format(tf) + "\nAccount Number: ", "ATM - City Central Bank",
 					JOptionPane.QUESTION_MESSAGE);
 
-				acctNo = acctNo.trim();
+				acctNo = acctNo.trim(); // remove whitespace from input entered
 
 			} catch(NullPointerException e) {
 				file.close();
@@ -93,7 +94,6 @@ public class ATM_Machine_Main extends JFrame {
 			}
 
 			file.printf("\n\tATM - City Central Bank\nToday is: %s\n", now.format(tf));
-
 			attempt++;
 
 			if (acctNo.equals("cancel")) {
@@ -119,6 +119,7 @@ public class ATM_Machine_Main extends JFrame {
 				System.exit(0);
 			}
 
+			// create custom pin UI window with input value masking ('*')
 			JPanel panel = new JPanel();
 			String custom = "Pin: ";
 			JLabel label = new JLabel(custom);
@@ -188,20 +189,22 @@ public class ATM_Machine_Main extends JFrame {
 		else if (savCheck.equals("S"))
 			savCheck2 = "Savings";
 
+		// create account
 		Account account = new Account(acctNo, pin, ((Math.random() % 23) * 100000), savCheck2);
 
 		String select = "0";
 
+		// load to menu
 		menu(account, file, select, savCheck, fileMain);
 	}
 
 	public static void menu(Account account, PrintWriter file, String select, String savCheck, File fileMain) throws IOException, SQLException {
-		boolean acctTerminated = false;
+		boolean acctTerminated = false; // flag checks if account has been terminated by user or not
 		DBConnector connect = new DBConnector(); // connect class to DB class to perform db operations
 
 		do {
-
 			try {
+				// display menu for user
 				select = JOptionPane.showInputDialog(null,
 						"Enter:\n\t1. (1) for balance inquiry\n\t2. (2) for cash withdrawal"
 								+ "\n\t3. (3) for cash deposit\n\t4. (4) to terminate account\n\t5."
@@ -210,10 +213,11 @@ public class ATM_Machine_Main extends JFrame {
 						"ATM - City Central Bank", JOptionPane.QUESTION_MESSAGE);
 
 				String bal = df.format(account.getBalance());
-				connect.addData(Integer.parseInt(acctNo), Integer.parseInt(pin), bal, savCheck);
+				connect.addData(Integer.parseInt(acctNo), Integer.parseInt(pin), bal, savCheck); // add data to db
+
 				switch (select) {
 
-
+				// balance inquiry
 				case "1": {
 					if (account != null) {
 						JOptionPane.showMessageDialog(null, account, "Balance Inquiry",
@@ -227,6 +231,7 @@ public class ATM_Machine_Main extends JFrame {
 					break;
 				}
 
+				// withdraw funds
 				case "2": {
 					if (acctTerminated == true) {
 						JOptionPane.showMessageDialog(null, "Account is empty, can't withdraw!", "Warning!",
@@ -238,6 +243,7 @@ public class ATM_Machine_Main extends JFrame {
 					break;
 				}
 
+				// deposit funds
 				case "3": {
 					if (acctTerminated == true) {
 						JOptionPane.showMessageDialog(null, "Account is empty, can't deposit!", "Warning!",
@@ -249,6 +255,7 @@ public class ATM_Machine_Main extends JFrame {
 					break;
 				}
 
+				// terminate account
 				case "4": {
 					if (acctTerminated == true) {
 						JOptionPane.showMessageDialog(null, "Account is already empty!", "Warning!",
@@ -258,15 +265,16 @@ public class ATM_Machine_Main extends JFrame {
 
 					connect.terminateAccount(Integer.parseInt(account.getAcctNo())); // deletes account from db table @ localhost site
 
-					account = null;
+					account = null; // set account to value of null (clearing all attribute values)
 					JOptionPane.showMessageDialog(null, "\nAccount has been terminated\n", "Account Termination",
 							JOptionPane.INFORMATION_MESSAGE);
 
 					file.println("\nAccount has been terminated");
-					acctTerminated = true;
+					acctTerminated = true; // flip flag so that certain ops can't be done under a terminated account
 					break;
 				}
 
+				// transfer funds
 				case "5": {
 					if (acctTerminated == true) {
 						JOptionPane.showMessageDialog(null, "Account is empty, can't transfer!", "Warning!",
@@ -290,6 +298,8 @@ public class ATM_Machine_Main extends JFrame {
 					t1.transferFunds(acctNo2, file);
 					break;
 				}
+
+				// save (serialize) object
 				case "6": {
 					if (acctTerminated == true) {
 						JOptionPane.showMessageDialog(null, "Account is empty, can't serialize!", "Warning!",
@@ -300,14 +310,14 @@ public class ATM_Machine_Main extends JFrame {
 
 					// Serialization
 					try {
-						// Saving of object in a file
+						// Save object in a file
 						FileOutputStream file1 = new FileOutputStream(filename);
 						ObjectOutputStream out = new ObjectOutputStream(file1);
 
-						// method for serialization of object
+						// method for object serialization
 						out.writeObject(account);
 
-						// close method for serialization of object
+						// close serialization process
 						out.close();
 						file1.close();
 
@@ -320,6 +330,7 @@ public class ATM_Machine_Main extends JFrame {
 					break;
 				}
 
+				// load (deserialize) object
 				case "7": {
 					String filename = "Data.dat";
 
@@ -344,10 +355,10 @@ public class ATM_Machine_Main extends JFrame {
 					catch(ClassNotFoundException ex) {
 						System.out.println("Class not found error!");
 					}
-
 					break;
 				}
 
+				// exit program
 				case "8": {
 					file.print("\n\nHave a nice day!");
 					String in = JOptionPane.showInputDialog(null, "\nWould you like a receipt? ", "Receipt?",
@@ -363,7 +374,7 @@ public class ATM_Machine_Main extends JFrame {
 						Runtime rt = Runtime.getRuntime();
 						String file1 = "Receipt.txt";
 						JOptionPane.showMessageDialog(null, "\nHave a nice day!", "Goodbye", JOptionPane.QUESTION_MESSAGE);
-						Process p = rt.exec("notepad " + file1);
+						Process p = rt.exec("notepad " + file1); // open notepad program with pre-selected file
 					}
 
 					System.exit(0);
@@ -376,13 +387,11 @@ public class ATM_Machine_Main extends JFrame {
 				}
 			}
 
-			} catch (InputMismatchException inputMismatchException) {
+			} catch(InputMismatchException inputMismatchException) {
 				JOptionPane.showMessageDialog(null, "\tError! Enter a number choice. Invalid option!\n", "Warning",
 						JOptionPane.WARNING_MESSAGE);
-
 				input.nextLine();
-			}
-			catch(NullPointerException e) {
+			} catch(NullPointerException e) {
 				file.close();
 				fileMain.delete();
 				System.exit(0);

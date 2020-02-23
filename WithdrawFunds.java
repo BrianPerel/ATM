@@ -8,6 +8,8 @@ import java.util.InputMismatchException;
 /**
  * Inherit ATM program for primary methods / operations
  * Performs withdraw operations
+ * 	-prompt for withdraw amount, check valid range and format, perform op
+ * 	-program writes to file while class is executed
  */
 class WithdrawFunds extends ATM {
 
@@ -24,6 +26,7 @@ class WithdrawFunds extends ATM {
 
 		String money0;
 
+		// check for numeric input format, loop until correct format entered
 		do {
 			money0 = JOptionPane.showInputDialog(null, "\nWithdraw amount: $", "Withdraw", JOptionPane.QUESTION_MESSAGE);
 
@@ -35,6 +38,7 @@ class WithdrawFunds extends ATM {
 		final double money = Double.parseDouble(money0);
 		file.print("\n\tWithdraw amount: $" + money);
 
+		// valid range
 		if (money > 0 && money < account.getBalance()) {
 			this.account.setBalance(this.account.getBalance() - money);
 			file.print("\nWithdrawing...");

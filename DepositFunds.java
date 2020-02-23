@@ -7,10 +7,11 @@ import java.util.InputMismatchException;
 
 /**
  * Inherit ATM program for primary methods / operations
- * Performs deposit operation
+ * Performs deposit ATM operation
+ *	-asks for deposit amount, checks amount range and format, performs op
  */
 class DepositFunds extends ATM {
-	static DecimalFormat df = new DecimalFormat("$###,###.00");   // for decimal rounding (to 2 places and comma insertion)
+	static DecimalFormat df = new DecimalFormat("$###,###.00");   // for decimal rounding (to 2 places, plus $ and comma insertion)
 	private final Account account;
 
 	public DepositFunds(Account account) {

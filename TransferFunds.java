@@ -8,12 +8,14 @@ import java.io.IOException;
 /**
  * Inherit ATM program for primary methods / operations
  * Performs transfer operations
+ * 	-prompt for transfer amount, ask for account to transfer to, check boundary range and format, perform op
+ *	-performs file write while class is executed
  */
 class TransferFunds extends ATM {
 
-	private final Account account;
-	private final Account account2;
-	static DecimalFormat df = new DecimalFormat("$###,###.00");
+	private final Account account; // first account, transfer funds from
+	private final Account account2; // second account, transfer funds to
+	static DecimalFormat df = new DecimalFormat("$###,###.00"); // formatting to make values include a '$', commas, and rounding to 2 places
 
 	public TransferFunds(Account account, Account account2) {
 		super(account);
@@ -26,6 +28,7 @@ class TransferFunds extends ATM {
 
 		String money0;
 
+		// amount entered must be of numeric format, re-prompt every time format is incorrect
 		do {
 			money0 = JOptionPane.showInputDialog(null, "\nTransfer amount: $", "ATM", JOptionPane.QUESTION_MESSAGE);
 
@@ -37,6 +40,7 @@ class TransferFunds extends ATM {
 		double money = Double.parseDouble(money0);
 		file.print("\n\tTransfer amount: $" + money);
 
+		// valid amount range
 		if (money > 0 && money < this.account.getBalance()) {
 			this.account.setBalance(this.account.getBalance() - money);
 			file.print("\nTransferring...");
@@ -71,6 +75,7 @@ class TransferFunds extends ATM {
 			}
 		}
 
+		// checks if transfer amount is greater than available amount in account
 		else if (money > this.account.getBalance()) {
 			JOptionPane.showMessageDialog(null, "\tError: You don't have sufficient funds!", "Warning",
 					JOptionPane.WARNING_MESSAGE);

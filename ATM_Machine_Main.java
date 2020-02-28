@@ -59,7 +59,7 @@ public class ATM_Machine_Main extends JFrame {
 	public static void main(String[] args) throws IOException, SQLException {
 
 		// DBConnector connect = new DBConnector(); // connect class to DB class to perform db operations
-		//	connect.deleteDB();  // statement to delete db
+		// connect.deleteDB();  // statement to delete db
 
 		final File fileMain = new File("Receipt.txt");
 		final PrintWriter file = new PrintWriter(fileMain);
@@ -146,6 +146,7 @@ public class ATM_Machine_Main extends JFrame {
 				System.exit(0);
 			}
 
+
 			attempt++;
 
 			if(pin.length() != 4 || (pin.matches("[0-9]+") == false))
@@ -175,9 +176,9 @@ public class ATM_Machine_Main extends JFrame {
 			savCheck0 = savCheck0.trim();
 			savCheck = Character.toUpperCase(savCheck0.charAt(0)) + savCheck0.substring(1);
 
-			if(savCheck.length() != 1 || (savCheck.matches("[A-Za-z]") == false)
+		/*	if(savCheck.length() != 1 || (savCheck.matches("[A-Za-z]") == false)
 					|| !(savCheck.equals("S")) && !(savCheck.equals("C")))
-				JOptionPane.showMessageDialog(null, "Invalid option!", "Warning", JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(null, "Invalid option!", "Warning", JOptionPane.WARNING_MESSAGE);*/
 
 		}while(savCheck.length() != 1 || (savCheck.matches("[A-Za-z]") == false)
 				|| !(savCheck.equals("S")) && !(savCheck.equals("C")));
@@ -201,8 +202,14 @@ public class ATM_Machine_Main extends JFrame {
 	public static void menu(Account account, PrintWriter file, String select, String savCheck, File fileMain) throws IOException, SQLException {
 		boolean acctTerminated = false; // flag checks if account has been terminated by user or not
 
+		// open xampp app
+		Runtime rt0 = Runtime.getRuntime();
+		Process p0 = rt0.exec("C:\\xampp\\xampp-control.exe"); // open notepad program with pre-selected file
+
+		// create connection ptr to database
 	    DBConnector connect = new DBConnector(); // connect class to DB class to perform db operations
-	    String bal = df.format(account.getBalance());
+
+	    String bal = df.format(account.getBalance()); // get balance and format it
 	    connect.addData(Integer.parseInt(acctNo), Integer.parseInt(pin), bal, savCheck); // add data to db
 
 		do {
@@ -361,6 +368,7 @@ public class ATM_Machine_Main extends JFrame {
 				// exit program
 				case "8": {
 					file.print("\n\nHave a nice day!");
+					p0.destroy(); // close xampp app
 					String in = JOptionPane.showInputDialog(null, "\nWould you like a receipt? ", "Receipt?",
 							JOptionPane.QUESTION_MESSAGE);
 

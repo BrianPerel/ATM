@@ -3,6 +3,7 @@ import javax.swing.JOptionPane;
 import java.io.PrintWriter;
 import java.io.IOException;
 import java.util.InputMismatchException;
+import java.sql.*;
 
 
 /**
@@ -46,6 +47,16 @@ class WithdrawFunds extends ATM {
 					"Withdraw Complete! Your New Balance is: " + df.format(account.getBalance()), "Withdraw",
 					JOptionPane.QUESTION_MESSAGE);
 			file.printf("Withdraw complete! Your New Balance is: $%,.2f\n", account.getBalance());
+
+			try {
+				// create connection ptr to database
+				DBConnector connect = new DBConnector(); // connect class to DB class to perform db operations
+				connect.updateData(account.getBalance(), account.getNumber());
+			}
+			catch(SQLException ex) {
+				ex.printStackTrace();
+			}
+
 		} else if (money <= 0) {
 
 			try {

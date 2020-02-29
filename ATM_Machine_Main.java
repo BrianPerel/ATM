@@ -58,8 +58,14 @@ public class ATM_Machine_Main extends JFrame {
 
 	public static void main(String[] args) throws IOException, SQLException {
 
-		// DBConnector connect = new DBConnector(); // connect class to DB class to perform db operations
-		// connect.deleteDB();  // statement to delete db
+		/* Statements below are to delete database */
+		/*
+		Runtime rt0 = Runtime.getRuntime(); // create runtime instance to start open file process
+		Process p0 = rt0.exec("C:\\xampp\\xampp-control.exe"); // open xampp app
+		DBConnector connect = new DBConnector(); // connect class to DB class to perform db operations
+		connect.deleteDB();  // statement to delete db
+		p0.destroy(); // close xampp app
+		*/
 
 		final File fileMain = new File("Receipt.txt");
 		final PrintWriter file = new PrintWriter(fileMain);
@@ -176,12 +182,12 @@ public class ATM_Machine_Main extends JFrame {
 			savCheck0 = savCheck0.trim();
 			savCheck = Character.toUpperCase(savCheck0.charAt(0)) + savCheck0.substring(1);
 
-		/*	if(savCheck.length() != 1 || (savCheck.matches("[A-Za-z]") == false)
+			if(savCheck.length() != 1 || (savCheck.matches("[A-Za-z]") == false)
 					|| !(savCheck.equals("S")) && !(savCheck.equals("C")))
-				JOptionPane.showMessageDialog(null, "Invalid option!", "Warning", JOptionPane.WARNING_MESSAGE);*/
+				JOptionPane.showMessageDialog(null, "Invalid option!", "Warning", JOptionPane.WARNING_MESSAGE);
 
-		}while(savCheck.length() != 1 || (savCheck.matches("[A-Za-z]") == false)
-				|| !(savCheck.equals("S")) && !(savCheck.equals("C")));
+		}while((savCheck.matches("[A-Za-z]") == false)
+				|| (!(savCheck.equals("S")) && !(savCheck.equals("C"))));
 
 		String savCheck2 = "";
 		if(savCheck.equals("C"))
@@ -204,7 +210,7 @@ public class ATM_Machine_Main extends JFrame {
 
 		// open xampp app
 		Runtime rt0 = Runtime.getRuntime();
-		Process p0 = rt0.exec("C:\\xampp\\xampp-control.exe"); // open notepad program with pre-selected file
+		Process p0 = rt0.exec("C:\\xampp\\xampp-control.exe");
 
 		// create connection ptr to database
 	    DBConnector connect = new DBConnector(); // connect class to DB class to perform db operations
@@ -400,6 +406,7 @@ public class ATM_Machine_Main extends JFrame {
 						JOptionPane.WARNING_MESSAGE);
 				input.nextLine();
 			} catch(NullPointerException e) {
+				p0.destroy(); // close xampp app
 				file.close();
 				fileMain.delete();
 				System.exit(0);

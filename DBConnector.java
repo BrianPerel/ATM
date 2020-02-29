@@ -51,6 +51,19 @@ public class DBConnector {
 			System.out.println(e);
 		}
 	}
+	public void updateData(double bal, int acctNum) {
+		try {
+			// update record in db
+			Statement st = con.createStatement();
+			System.out.println("Updating record...");
+			st.executeUpdate("UPDATE TABLE Accounts WHERE Account_Number=12121212 SET Account_Balance=1000");
+			System.out.println("Record updated successfully...");
+		}catch(SQLException ex) {
+			System.out.println(ex);
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+	}
 	public void terminateAccount(int acctNo) {
 		// delete record from table 'Accounts'
 		try {

@@ -3,6 +3,7 @@ import javax.swing.JOptionPane;
 import java.io.PrintWriter;
 import java.util.InputMismatchException;
 import java.io.IOException;
+import java.sql.*;
 
 
 /**
@@ -53,6 +54,18 @@ class TransferFunds extends ATM {
 			file.printf("Transfer complete! Your New Balance for Account " + account.getAcctNo() + " is: "
 					+ df.format(this.account.getBalance()) + "\nYour New Balance for Account " + this.account2.getAcctNo()
 					+ " is: " + df.format(this.account2.getBalance()));
+
+			// update db record in table (since withdraw op performed on account)
+			try {
+				// create connection ptr to database
+				DBConnector connect = new DBConnector(); // connect class to DB class to perform db operations
+				String bal = df.format(account.getBalance()); // get balance and format it
+				connect.updateData(bal, Integer.parseInt(account.getAcctNo())); // add data to db
+			}
+			catch(SQLException ex) {
+				ex.printStackTrace();
+			}
+
 		} else if (money <= 0) {
 
 			try {

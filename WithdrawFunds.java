@@ -48,10 +48,12 @@ class WithdrawFunds extends ATM {
 					JOptionPane.QUESTION_MESSAGE);
 			file.printf("Withdraw complete! Your New Balance is: $%,.2f\n", account.getBalance());
 
+			// update db record in table (since withdraw op performed on account)
 			try {
 				// create connection ptr to database
 				DBConnector connect = new DBConnector(); // connect class to DB class to perform db operations
-				connect.updateData(account.getBalance(), account.getNumber());
+		     	String bal = df.format(account.getBalance()); // get balance and format it
+	    		connect.updateData(bal, Integer.parseInt(account.getAcctNo())); // add data to db
 			}
 			catch(SQLException ex) {
 				ex.printStackTrace();

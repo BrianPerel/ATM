@@ -51,13 +51,15 @@ public class DBConnector {
 			System.out.println(e);
 		}
 	}
-	public void updateData(double bal, int acctNum) {
+	public void updateData(String bal, int acctNo) {
 		try {
 			// update record in db
 			Statement st = con.createStatement();
+
 			System.out.println("Updating record...");
-			st.executeUpdate("UPDATE TABLE Accounts WHERE Account_Number=12121212 SET Account_Balance=1000");
+			st.executeUpdate("UPDATE Accounts SET Account_Balance= " + "\'" + bal + "\'" + " WHERE Account_Number=" + acctNo);
 			System.out.println("Record updated successfully...");
+
 		}catch(SQLException ex) {
 			System.out.println(ex);
 		}catch(Exception e) {

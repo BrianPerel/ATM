@@ -3,6 +3,7 @@ import java.io.PrintWriter;
 import java.io.IOException;
 import javax.swing.JOptionPane;
 import java.util.InputMismatchException;
+import java.sql.*;
 
 
 /**
@@ -42,6 +43,17 @@ class DepositFunds extends ATM {
 			JOptionPane.showMessageDialog(null,
 					"Deposit Complete! Your New Balance is: " + df.format(this.account.getBalance()));
 			file.printf("Deposit Complete! Your New Balance is: $%,.2f\n", this.account.getBalance());
+
+			// update db record in table (since withdraw op performed on account)
+			try {
+				// create connection ptr to database
+				DBConnector connect = new DBConnector(); // connect class to DB class to perform db operations
+				String bal = df.format(account.getBalance()); // get balance and format it
+				connect.updateData(bal, Integer.parseInt(account.getAcctNo())); // add data to db
+			}
+			catch(SQLException ex) {
+				ex.printStackTrace();
+			}
 		} else {
 			try {
 				JOptionPane.showMessageDialog(null, "\tError: You don't have sufficient funds!", "Warning",

@@ -345,6 +345,11 @@ public class ATM_Machine_Main extends JFrame {
 
 				// load (deserialize) object
 				case "7": {
+					if (acctTerminated == true) {
+						JOptionPane.showMessageDialog(null, "Account is empty, can't serialize!", "Warning!",
+								JOptionPane.WARNING_MESSAGE);
+						continue;
+					}
 					String filename = "Data.dat";
 
 					Account account1 = null; // create the empty object, request os to allocate chunk of memory to store contents from file

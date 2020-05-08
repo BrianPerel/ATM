@@ -6,5 +6,5 @@
 inside put: the main-class: ATM_Machine_Main
 Then for cmd: jar cfm ATM.jar manifest.txt *.class
 
-[Check it out here](https://brianperel.github.io/Project1.htm)
+[Check it out here](https://brianperel.github.io/project1.htm)
 
